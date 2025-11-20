@@ -8,7 +8,7 @@ The Cheap Java project is a comprehensive data caching system organized into **8
 ### Module Structure
 **Foundation Modules:**
 - `cheap-core` - Core Cheap interfaces and basic implementations (minimal dependencies)
-- `cheap-json` - JSON serialization/deserialization using Jackson (Java) → native json/pydantic (Python)
+- `cheap-json` - JSON serialization/deserialization using Jackson (Java) → orjson (Python)
 - `cheap-db-sqlite` - SQLite database persistence (development, testing, single-user apps)
 - `cheap-db-postgres` - PostgreSQL database persistence (recommended for production)
 - `cheap-db-mariadb` - MariaDB/MySQL database persistence
@@ -20,99 +20,236 @@ The Cheap Java project is a comprehensive data caching system organized into **8
 **Testing Infrastructure:**
 - `integration-tests` - Cross-database integration tests and performance validation
 
+### Implementation Standards
+- **Type hints:** Use Python type hints throughout the codebase for all functions, methods, and variables
+- **Static analysis:** Use Pyright for static type checking
+- **JSON serialization:** Use orjson for high-performance JSON with native UUID and datetime support
+- **Build system:** Use Hatch for monorepo management and packaging
+- **Multi-version testing:** Use Nox for testing across multiple Python versions
+
 ---
 
 ## Phase 1: Project Setup & Infrastructure
 
 ### 1.1 Build System Setup
-- **Create multi-package Python project** in `/cheap-py` directory
+- **Create multi-package Python project** in `/cheap-py` directory using Hatch
 - **Structure:**
   ```
   cheap-py/
-  ├── pyproject.toml (monorepo root)
+  ├── pyproject.toml (monorepo root - Hatch workspace)
+  ├── noxfile.py (multi-version testing configuration)
+  ├── pyrightconfig.json (Pyright configuration)
+  ├── .github/
+  │   └── workflows/
+  │       ├── build-cheap-python.yml
+  │       ├── integration-tests.yml
+  │       └── docker-integration-tests.yml
   ├── README.md
   ├── packages/
   │   ├── cheap-core/
   │   │   ├── pyproject.toml
   │   │   ├── src/cheap/core/
+  │   │   │   ├── __init__.py
+  │   │   │   └── py.typed
   │   │   └── tests/
   │   ├── cheap-json/
   │   │   ├── pyproject.toml
   │   │   ├── src/cheap/json/
+  │   │   │   ├── __init__.py
+  │   │   │   └── py.typed
   │   │   └── tests/
   │   ├── cheap-db-sqlite/
   │   │   ├── pyproject.toml
   │   │   ├── src/cheap/db/sqlite/
+  │   │   │   ├── __init__.py
+  │   │   │   └── py.typed
   │   │   └── tests/
   │   ├── cheap-db-postgres/
   │   │   ├── pyproject.toml
   │   │   ├── src/cheap/db/postgres/
+  │   │   │   ├── __init__.py
+  │   │   │   └── py.typed
   │   │   └── tests/
   │   ├── cheap-db-mariadb/
   │   │   ├── pyproject.toml
   │   │   ├── src/cheap/db/mariadb/
+  │   │   │   ├── __init__.py
+  │   │   │   └── py.typed
   │   │   └── tests/
   │   ├── cheap-rest/
   │   │   ├── pyproject.toml
   │   │   ├── src/cheap/rest/
+  │   │   │   ├── __init__.py
+  │   │   │   └── py.typed
   │   │   └── tests/
   │   ├── cheap-rest-client/
   │   │   ├── pyproject.toml
   │   │   ├── src/cheap/rest/client/
+  │   │   │   ├── __init__.py
+  │   │   │   └── py.typed
   │   │   └── tests/
   │   └── integration-tests/
   │       ├── pyproject.toml
   │       └── tests/
   ```
-- **Build tooling:** Poetry or Hatch for workspace/monorepo management
-- **Testing:** pytest with pytest-cov for coverage
-- **Linting:** ruff (fast linter/formatter) or black + pylint + mypy
-- **Type checking:** mypy with strict mode for type safety
+
+- **Build tooling:**
+  - **Hatch** - Modern Python project manager with excellent monorepo/workspace support
+  - Supports building, versioning, and publishing multiple packages
+  - Built-in environment management
+  - Configuration via `pyproject.toml`
+
+- **Multi-version testing:**
+  - **Nox** - Automated testing across multiple Python versions (3.10, 3.11, 3.12, 3.13)
+  - Define test sessions for unit tests, integration tests, type checking, linting
+  - Simpler than tox with Python-based configuration
+
+- **Testing:**
+  - pytest with pytest-cov for coverage
+  - pytest-asyncio for async test support
+  - pytest-xdist for parallel test execution
+
+- **Linting:** ruff (fast linter and formatter - replaces black, isort, flake8, pylint)
+
+- **Type checking:**
+  - **Pyright** - Microsoft's static type checker (faster than mypy, better IDE integration)
+  - Run in strict mode for maximum type safety
+  - Include type checking as part of unit test runs (via pytest plugin or nox session)
+  - Download and install .pyi stub files for all third-party libraries where available
+  - Use `py.typed` marker in each package to indicate type hint support (PEP 561)
 
 ### 1.2 Dependency Mapping
 
 **Java → Python equivalents:**
 - **Guava** → Python standard library (collections, itertools, functools)
-- **Lombok** → dataclasses, attrs, or pydantic
-- **JetBrains Annotations** → Type hints (typing module)
-- **JUnit Jupiter** → pytest with fixtures
-- **Commons Math3** → NumPy or Python's math/decimal modules
-- **Jackson** → Built-in json module or pydantic for validation
-- **SQLite JDBC** → sqlite3 (built-in) or sqlalchemy
-- **PostgreSQL JDBC** → psycopg3 (modern async driver)
+- **Lombok** → dataclasses with type hints (prefer built-in dataclasses)
+- **JetBrains Annotations (@NotNull/@Nullable)** → Type hints (typing module with strict Optional typing)
+- **JUnit Jupiter** → pytest with fixtures and type-annotated test functions
+- **Commons Math3** → Python's math/decimal modules (decimal.Decimal for precision)
+- **Jackson** → **orjson** (high-performance JSON with native UUID and datetime serialization)
+- **SQLite JDBC** → sqlite3 (built-in) or aiosqlite (async)
+- **PostgreSQL JDBC** → psycopg3 (modern async driver with full type hint support)
 - **MariaDB JDBC** → PyMySQL or mysql-connector-python
-- **Flyway** → Alembic or yoyo-migrations
-- **Spring Boot** → FastAPI or Flask for REST API
-- **Spring RestTemplate/WebClient** → httpx or aiohttp for HTTP client
+- **Flyway** → Alembic or yoyo-migrations for database migrations
+- **Spring Boot** → FastAPI (recommended - excellent type hint support and auto-documentation)
+- **Spring RestTemplate/WebClient** → httpx (modern, type-safe HTTP client with async support)
 - **Testcontainers** → testcontainers-python for integration tests
+
+**Key Python-specific libraries:**
+- **orjson** - Ultra-fast JSON library with native support for:
+  - UUID serialization/deserialization
+  - datetime/date/time serialization
+  - numpy types (if needed)
+  - 2-5x faster than standard json library
+- **Pyright** - Static type checker with comprehensive type analysis
+- **types-*** packages - Type stubs for third-party libraries (e.g., types-requests, types-redis)
+
+### 1.3 GitHub Actions Workflows
+
+Set up three GitHub Actions workflows matching the Java repository structure:
+
+#### 1.3.1 Build Workflow (`build-cheap-python.yml`)
+**Triggers:** Push events affecting module paths
+- `packages/cheap-core/**`
+- `packages/cheap-json/**`
+- `packages/cheap-db-sqlite/**`
+- `packages/cheap-db-postgres/**`
+- `packages/cheap-db-mariadb/**`
+- `packages/cheap-rest/**`
+- `packages/cheap-rest-client/**`
+- `packages/integration-tests/**`
+- `pyproject.toml`
+- `noxfile.py`
+- `.github/workflows/build-cheap-python.yml`
+
+**Jobs:**
+1. **Checkout code** (actions/checkout@v4)
+2. **Setup Python matrix** - Test on Python 3.10, 3.11, 3.12, 3.13 using actions/setup-python@v5
+3. **Install Hatch** - Install build system
+4. **Install dependencies** - Use Hatch to install all workspace packages
+5. **Run Pyright** - Static type checking across all modules
+6. **Run tests** - Execute `nox -s tests` for all modules
+7. **Run linting** - Execute `nox -s lint` with ruff
+8. **Generate coverage report** - Combine coverage from all modules
+9. **Upload test results** - Archive test reports and coverage (actions/upload-artifact@v4, runs on failure too)
+10. **Upload packages** - Archive built wheel files for all packages
+
+#### 1.3.2 Integration Tests Workflow (`integration-tests.yml`)
+**Triggers:** Manual dispatch (workflow_dispatch)
+
+**Jobs:**
+1. **Checkout code** (actions/checkout@v4)
+2. **Setup Python** - Python 3.12 (primary version)
+3. **Install Hatch**
+4. **Install dependencies**
+5. **Run integration tests** - Execute `nox -s integration_tests`
+   - Tests with SQLite, PostgreSQL, and MariaDB
+   - Uses in-process databases or testcontainers
+6. **Upload test results** - Archive integration test reports (if: always())
+
+**Note:** Implement this workflow once integration-tests module is ready
+
+#### 1.3.3 Docker Integration Tests Workflow (`docker-integration-tests.yml`)
+**Triggers:** Manual dispatch (workflow_dispatch)
+
+**Jobs:**
+1. **Checkout code** (actions/checkout@v4)
+2. **Setup Python** - Python 3.12
+3. **Install Hatch**
+4. **Setup Docker** - Ensure Docker is available
+5. **Run dockerized integration tests** - Execute `nox -s docker_integration_tests`
+   - Spin up PostgreSQL and MariaDB containers
+   - Run full integration test suite against real databases
+   - Test REST API with all database backends
+6. **Upload test results** - Archive test reports and logs (if: always())
+
+**Note:** Implement this workflow once Docker-based tests are implemented
+
+#### Workflow Implementation Priority
+1. **Start with build workflow** - Implement immediately for CI/CD
+2. **Add integration tests workflow** - Once Phase 9 (integration-tests) is started
+3. **Add Docker integration tests** - Once containerized tests are implemented
 
 ---
 
 ## Phase 2: Core Module Port (cheap-core)
 
 ### 2.1 Type System & Enums
-**Priority:** Port fundamental enums first
-- `PropertyType` → Python Enum with type validation methods
-- `HierarchyType` → Python Enum
-- `CatalogSpecies` → Python Enum
-- `LocalEntityType` → Python Enum
+**Priority:** Port fundamental enums first with full type annotations
+- `PropertyType` → Python Enum with type validation methods (fully type-hinted)
+- `HierarchyType` → Python Enum (fully type-hinted)
+- `CatalogSpecies` → Python Enum (fully type-hinted)
+- `LocalEntityType` → Python Enum (fully type-hinted)
+
+**Type hint requirements:**
+- All enum methods must have complete type signatures
+- Use `typing.Literal` for enum value types where appropriate
+- Ensure Pyright can infer all types correctly
 
 ### 2.2 Model Interfaces & Protocols
-**Port Java interfaces to Python Protocols (PEP 544):**
+**Port Java interfaces to Python Protocols (PEP 544) with full type annotations:**
 - Core protocols: `Entity`, `Aspect`, `Property`, `PropertyDef`, `AspectDef`
 - Catalog protocols: `Catalog`, `CatalogDef`
 - Hierarchy protocols: `Hierarchy`, `EntityListHierarchy`, `EntitySetHierarchy`, `EntityDirectoryHierarchy`, `EntityTreeHierarchy`, `AspectMapHierarchy`
 - Builder protocols: `AspectBuilder`, `MutableAspectDef`
 
+**Type annotation requirements:**
+- Use `typing.Protocol` for all interface definitions
+- Add complete type signatures for all protocol methods
+- Use generic protocols with `typing.TypeVar` where needed
+- Ensure all return types and parameters are fully annotated
+- Use `typing.Self` (Python 3.11+) for builder pattern return types
+
 **Considerations:**
-- Java's UUID → Use `uuid` standard library module
-- Java's ZonedDateTime → Use `datetime` with `zoneinfo` (Python 3.9+) or `dateutil`
-- Java's URI → Use `urllib.parse` or validate as string
-- Java's BigInteger/BigDecimal → Use `int` (unlimited precision) and `decimal.Decimal`
-- Java interfaces → Use `typing.Protocol` for structural typing or ABC for nominal typing
+- Java's UUID → Use `uuid.UUID` with full type hints
+- Java's ZonedDateTime → Use `datetime.datetime` with `zoneinfo` (Python 3.9+) or `dateutil.tz`
+- Java's URI → Use `str` with runtime validation or custom URI type
+- Java's BigInteger/BigDecimal → Use `int` (unlimited precision) and `decimal.Decimal` with type hints
+- Java interfaces → Use `typing.Protocol` for structural typing (preferred) or ABC for nominal typing
+- All protocol methods must be fully type-annotated for Pyright compatibility
 
 ### 2.3 Basic Implementations
-**Port ~30 basic implementation classes:**
+**Port ~30 basic implementation classes with complete type annotations:**
 - Entity implementations: `EntityImpl`, `EntityLazyIdImpl`, `LocalEntityOneCatalogImpl`, etc.
 - Aspect implementations: `AspectBaseImpl`, `AspectPropertyMapImpl`, `AspectObjectMapImpl`
 - Hierarchy implementations: All 5 hierarchy types
@@ -120,11 +257,17 @@ The Cheap Java project is a comprehensive data caching system organized into **8
 - Catalog: `CatalogImpl`, `CatalogDefImpl`
 
 **Key decisions:**
-- Use `@dataclass` or `attrs` for data classes with automatic __init__, __repr__, etc.
-- Consider using `pydantic` for runtime validation
-- Use `typing.Final` and immutable types for immutability
+- Use `@dataclass` (preferred) for data classes with automatic __init__, __repr__, etc.
+  - Always include complete type hints for all fields
+  - Use `dataclass(frozen=True)` for immutable classes
+  - Use `dataclass(slots=True)` (Python 3.10+) for memory efficiency
+- **Comprehensive type hints required:**
+  - All method parameters and return types
+  - All class attributes and instance variables
+  - Use `typing.ClassVar` for class variables
+  - Use `typing.Final` for constants and immutable attributes
 - Consider `frozendict` or `immutables` library for immutable collections
-- Use `__slots__` for memory optimization on frequently instantiated classes
+- Ensure all code passes Pyright in strict mode
 
 ### 2.4 Reflection-Based Implementations
 **Port reflection utilities:**
@@ -148,26 +291,60 @@ The Cheap Java project is a comprehensive data caching system organized into **8
 
 ## Phase 3: JSON Module Port (cheap-json)
 
-### 3.1 Serialization/Deserialization
-**Port Jackson serializers to Python:**
-- Native `json.dumps()`/`json.loads()` with custom encoder/decoder
-- Or use `pydantic` for automatic serialization with validation
-- Or use `marshmallow` for schema-based serialization
+### 3.1 Serialization/Deserialization with orjson
+**Use orjson for high-performance JSON serialization:**
+
+**Why orjson:**
+- **Native UUID support:** Automatically serializes/deserializes `uuid.UUID` objects
+- **Native datetime support:** Handles `datetime`, `date`, and `time` objects natively
+- **Performance:** 2-5x faster than standard json library
+- **Type safety:** Works seamlessly with type hints
+- **Standards compliant:** RFC 8259 compliant JSON output
 
 **Files to port:**
 - Serializers: `AspectSerializer`, `AspectDefSerializer`, `CatalogSerializer`, etc.
 - Deserializers: `AspectDeserializer`, `CatalogDeserializer`, `HierarchyDeserializer`, etc.
 
-**Python advantages:**
-- Custom JSON encoder via `json.JSONEncoder` subclass
-- Custom JSON decoder via `object_hook` parameter
-- `pydantic` provides automatic serialization for dataclasses
+**Implementation approach:**
+```python
+import orjson
+from typing import Any
+from uuid import UUID
+from datetime import datetime
+
+# Serialization (orjson handles UUID and datetime natively)
+def serialize_aspect(aspect: Aspect) -> bytes:
+    return orjson.dumps(
+        aspect,
+        option=orjson.OPT_NAIVE_UTC | orjson.OPT_SERIALIZE_NUMPY
+    )
+
+# Deserialization with type hints
+def deserialize_aspect(data: bytes) -> Aspect:
+    parsed: dict[str, Any] = orjson.loads(data)
+    # Convert to Aspect object with proper type checking
+    return Aspect(**parsed)
+```
+
+**Key features to leverage:**
+- `orjson.OPT_NAIVE_UTC` - Serialize naive datetimes as UTC
+- `orjson.OPT_SERIALIZE_UUID` - Already default, UUIDs serialized as strings
+- `orjson.OPT_SORT_KEYS` - Deterministic output for testing
+- `default` parameter - Custom serialization for unsupported types
+
+**Type hint requirements:**
+- All serialization functions must be fully type-hinted
+- Use `bytes` for orjson output (returns bytes, not str)
+- Define TypedDict or dataclass types for JSON schema validation
+- Ensure Pyright can verify all type conversions
 
 ### 3.2 Schema Validation
-- Use `pydantic` for runtime validation with type hints
-- Or use `marshmallow` for schema definition and validation
-- Or use `jsonschema` for JSON Schema validation
-- Type guards via `isinstance()` checks
+- Leverage type hints with runtime validation where needed
+- Use Pyright to catch type errors at development time
+- Consider `pydantic` for complex runtime validation scenarios
+- Use `typing.TypedDict` for JSON object structure definitions
+- Type guards via `isinstance()` checks for runtime safety
+- Validate using type-annotated dataclasses/protocols
 
 ---
 
@@ -191,9 +368,13 @@ The Cheap Java project is a comprehensive data caching system organized into **8
 - Consider async database drivers for better I/O performance
 
 ### 4.4 Testing
-- Unit tests for SQLite-specific functionality
+- Unit tests for SQLite-specific functionality (fully type-hinted)
 - Use in-memory SQLite (`:memory:`) for fast tests
 - Test schema creation, migrations, and CRUD operations
+- **Include Pyright static analysis:**
+  - Run `pyright` as part of test suite
+  - Use `pytest-pyright` plugin or nox session
+  - Ensure zero type errors before tests pass
 
 ---
 
@@ -216,9 +397,10 @@ The Cheap Java project is a comprehensive data caching system organized into **8
 - Implement connection retry logic
 
 ### 5.4 Testing
-- Unit tests for PostgreSQL-specific functionality
+- Unit tests for PostgreSQL-specific functionality (fully type-hinted)
 - Consider testcontainers-python for spinning up PostgreSQL in tests
 - Test connection pooling and concurrent access
+- **Include Pyright static analysis:** Run as part of test suite
 
 ---
 
@@ -236,9 +418,10 @@ The Cheap Java project is a comprehensive data caching system organized into **8
 - Consider version-specific features
 
 ### 6.3 Testing
-- Unit tests for MariaDB-specific functionality
+- Unit tests for MariaDB-specific functionality (fully type-hinted)
 - Consider testcontainers-python for spinning up MariaDB in tests
 - Test character encoding and collation handling
+- **Include Pyright static analysis:** Run as part of test suite
 
 ---
 
@@ -278,10 +461,11 @@ The Cheap Java project is a comprehensive data caching system organized into **8
 - Version the API appropriately
 
 ### 7.5 Testing
-- Unit tests for endpoint logic
+- Unit tests for endpoint logic (fully type-hinted)
 - Integration tests with test database
 - API contract tests
 - Load testing for performance baseline
+- **Include Pyright static analysis:** Verify all endpoint type signatures
 
 ---
 
@@ -319,10 +503,11 @@ The Cheap Java project is a comprehensive data caching system organized into **8
 - Request logging and debugging
 
 ### 8.5 Testing
-- Unit tests with mocked HTTP responses
+- Unit tests with mocked HTTP responses (fully type-hinted)
 - Integration tests against real API
 - Test error handling and retries
 - Test async and sync variants
+- **Include Pyright static analysis:** Verify client method type signatures
 
 ---
 
@@ -496,7 +681,7 @@ cheap-db-sqlite  cheap-db-postgres  cheap-db-mariadb
 8. **integration-tests** - Final validation
 
 **Risk Areas:**
-- Ensuring type safety with mypy in complex generic scenarios
+- Ensuring type safety with Pyright in complex generic scenarios
 - Database async patterns and connection management
 - Performance compared to Java (may need optimization)
 - Memory usage with large datasets (Python has higher overhead)
@@ -515,32 +700,94 @@ cheap-db-sqlite  cheap-db-postgres  cheap-db-mariadb
 ## Additional Recommendations
 
 ### Code Quality Tools
+- **Pyright:** Static type checker with strict mode (primary type checker)
 - **ruff:** Modern, fast linter and formatter (replaces black, isort, flake8)
-- **mypy:** Static type checker with strict mode
 - **pytest:** Testing framework with rich plugin ecosystem
-- **pre-commit:** Git hooks for code quality checks
+- **pytest-pyright:** Integration of Pyright with pytest
+- **pre-commit:** Git hooks for code quality checks (include Pyright and ruff)
 
 ### Development Workflow
-- Use `poetry` or `hatch` for monorepo/workspace management
-- Use `tox` or `nox` for testing across Python versions
-- Use GitHub Actions or similar for CI/CD
+- **Use Hatch for monorepo/workspace management:**
+  - Modern Python project manager
+  - Excellent workspace support for multiple packages
+  - Built-in environment management
+  - Simplified build and publish workflows
+- **Use Nox for testing across Python versions:**
+  - Test against Python 3.10, 3.11, 3.12, 3.13
+  - Define sessions for: tests, lint, typecheck, integration-tests
+  - Python-based configuration (more flexible than tox)
+  - Easy CI/CD integration
+- Use GitHub Actions for CI/CD (3 workflows as defined in Phase 1.3)
 - Use `coverage.py` (via pytest-cov) for test coverage
 - Docker Compose for local development with all databases
+- Download .pyi stub files for all third-party dependencies:
+  - Install types-* packages (e.g., types-requests, types-redis)
+  - Check PyPI for stub packages for each dependency
+  - Configure Pyright to use stub paths
 
 ### Optional Enhancements
-- **Pydantic V2:** For runtime validation and serialization (very fast)
-- **SQLAlchemy 2.0:** For unified database abstraction layer
-- **FastAPI:** For high-performance REST API with automatic docs
-- **Type stubs:** For better IDE support and type checking
-- **orjson:** For faster JSON serialization than standard library
+- **Pydantic V2:** For runtime validation and serialization (very fast) - useful for REST API
+- **SQLAlchemy 2.0:** For unified database abstraction layer across all database modules
+
+### Required Technologies (Summary)
+The following are **required** (not optional) for this project:
+- **Hatch:** Monorepo/workspace management and packaging
+- **Nox:** Multi-version testing automation
+- **Pyright:** Static type analysis (strict mode)
+- **orjson:** High-performance JSON with native UUID/datetime support
+- **Type hints:** Complete type annotations throughout the codebase
+- **FastAPI:** For REST API implementation (recommended framework)
 
 ### CI/CD Pipeline
-- Run tests on all supported Python versions (3.10, 3.11, 3.12)
+- Run tests on all supported Python versions (3.10, 3.11, 3.12, 3.13) via Nox
 - Test against all database backends in parallel
-- Type checking with mypy
-- Code coverage reporting
+- **Type checking with Pyright** (strict mode, zero errors required)
+- Code coverage reporting (target: 80%+ coverage)
+- Linting with ruff (formatting and code quality)
 - Performance regression testing
 - Docker image building for cheap-rest
+- See Phase 1.3 for complete GitHub Actions workflow definitions
+
+### Nox Configuration Example
+Create a `noxfile.py` in the repository root:
+
+```python
+import nox
+
+# Supported Python versions
+PYTHON_VERSIONS = ["3.10", "3.11", "3.12", "3.13"]
+
+@nox.session(python=PYTHON_VERSIONS)
+def tests(session):
+    """Run unit tests for all packages."""
+    session.install("hatch")
+    session.run("hatch", "run", "test:pytest", "-v", "--cov")
+
+@nox.session(python="3.12")
+def typecheck(session):
+    """Run Pyright type checking."""
+    session.install("hatch", "pyright")
+    session.run("pyright", "packages/")
+
+@nox.session(python="3.12")
+def lint(session):
+    """Run ruff linting and formatting."""
+    session.install("ruff")
+    session.run("ruff", "check", "packages/")
+    session.run("ruff", "format", "--check", "packages/")
+
+@nox.session(python="3.12")
+def integration_tests(session):
+    """Run integration tests."""
+    session.install("hatch")
+    session.run("hatch", "run", "test:pytest", "packages/integration-tests/")
+
+@nox.session(python="3.12")
+def docker_integration_tests(session):
+    """Run dockerized integration tests."""
+    session.install("hatch", "testcontainers")
+    session.run("hatch", "run", "test:pytest", "packages/integration-tests/", "-m", "docker")
+```
 
 ---
 
