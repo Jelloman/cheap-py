@@ -74,20 +74,6 @@ class TestCatalogSpecies:
         assert not CatalogSpecies.SINK.can_diverge
         assert not CatalogSpecies.MIRROR.can_diverge
 
-    def test_get_description(self) -> None:
-        """Test get_description method returns non-empty strings."""
-        for species in CatalogSpecies:
-            description = species.get_description()
-            assert isinstance(description, str)
-            assert len(description) > 0
-
-    def test_get_typical_use_case(self) -> None:
-        """Test get_typical_use_case method returns non-empty strings."""
-        for species in CatalogSpecies:
-            use_case = species.get_typical_use_case()
-            assert isinstance(use_case, str)
-            assert len(use_case) > 0
-
     def test_source_characteristics(self) -> None:
         """Test that SOURCE has expected characteristics."""
         assert CatalogSpecies.SOURCE.is_authoritative

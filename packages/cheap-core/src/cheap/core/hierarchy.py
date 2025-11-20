@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterable, Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 from uuid import UUID
 
 if TYPE_CHECKING:
-    from cheap.core.entity import Entity
+    from cheap.core.aspect import Aspect
     from cheap.core.hierarchy_type import HierarchyType
 
 
@@ -204,70 +204,103 @@ class EntitySetHierarchy(Hierarchy, Protocol):
 @runtime_checkable
 class EntityDirectoryHierarchy(Hierarchy, Protocol):
     """
-    Protocol for directory-based hierarchies (path-based navigation).
+    Protocol for flat directory-based hierarchies.
 
-    Organizes entities in a directory-like structure with paths,
-    supporting parent-child relationships.
+    Organizes entities with string keys in a single-level flat structure,
+    like a flat directory or dictionary.
     """
 
-    def add_at_path(self, path: str, entity_id: UUID) -> None:
+    def put(self, key: str, entity_id: UUID) -> None:
         """
-        Add an entity at a specific path.
+        Associate an entity with a key.
 
         Args:
-            path: The path where the entity should be added (e.g., "/folder/subfolder").
-            entity_id: The UUID of the entity to add.
-
-        Raises:
-            ValueError: If the path is invalid.
+            key: The string key.
+            entity_id: The UUID of the entity.
         """
         ...
 
-    def remove_at_path(self, path: str) -> UUID | None:
+    def get(self, key: str) -> UUID | None:
         """
-        Remove and return the entity at a specific path.
+        Get the entity associated with a key.
 
         Args:
-            path: The path to remove from.
+            key: The string key.
 
         Returns:
-            The UUID of the removed entity, or None if the path was empty.
+            The UUID of the entity, or None if key not found.
         """
         ...
 
-    def get_at_path(self, path: str) -> UUID | None:
+    def remove(self, key: str) -> UUID | None:
         """
-        Get the entity at a specific path.
+        Remove and return the entity at a key.
 
         Args:
-            path: The path to get from.
+            key: The string key.
 
         Returns:
-            The UUID of the entity at that path, or None if not found.
+            The UUID of the removed entity, or None if key not found.
         """
         ...
 
-    def list_children(self, path: str) -> list[str]:
+    def contains_key(self, key: str) -> bool:
         """
-        List all immediate children of a path.
+        Check if a key exists.
 
         Args:
-            path: The parent path.
+            key: The string key to check.
 
         Returns:
-            A list of child paths.
+            True if the key exists.
         """
         ...
 
-    def path_exists(self, path: str) -> bool:
+    def keys(self) -> set[str]:
         """
-        Check if a path exists in this hierarchy.
-
-        Args:
-            path: The path to check.
+        Get all keys in this directory.
 
         Returns:
-            True if the path exists.
+            A set of all string keys.
+        """
+        ...
+
+
+@runtime_checkable
+class Node(Protocol):
+    """
+    Protocol representing a node in an EntityTreeHierarchy.
+
+    A Node contains an entity ID and tracks parent-child relationships.
+    """
+
+    @property
+    def entity_id(self) -> UUID:
+        """
+        Get the entity ID of this node.
+
+        Returns:
+            The UUID of the entity.
+        """
+        ...
+
+    @property
+    def parent(self) -> Node | None:
+        """
+        Get the parent node.
+
+        Returns:
+            The parent Node, or None if this is the root.
+        """
+        ...
+
+    @property
+    def children(self) -> list[Node]:
+        """
+        Get the child nodes.
+
+        Returns:
+            A list of child Node instances.
         """
         ...
 
@@ -282,12 +315,24 @@ class EntityTreeHierarchy(Hierarchy, Protocol):
     """
 
     @property
-    def root(self) -> UUID | None:
+    def root(self) -> Node | None:
         """
-        Get the root entity of this tree.
+        Get the root node of this tree.
 
         Returns:
-            The UUID of the root entity, or None if the tree is empty.
+            The root Node, or None if the tree is empty.
+        """
+        ...
+
+    def get_node(self, entity_id: UUID) -> Node | None:
+        """
+        Get the node for a given entity ID.
+
+        Args:
+            entity_id: The UUID of the entity.
+
+        Returns:
+            The Node if found, None otherwise.
         """
         ...
 
@@ -304,15 +349,15 @@ class EntityTreeHierarchy(Hierarchy, Protocol):
         """
         ...
 
-    def remove_subtree(self, entity_id: UUID) -> set[UUID]:
+    def remove(self, entity_id: UUID) -> bool:
         """
-        Remove an entity and all its descendants.
+        Remove an entity from the tree.
 
         Args:
             entity_id: The UUID of the entity to remove.
 
         Returns:
-            A set of all removed entity UUIDs (including the entity itself).
+            True if the entity was removed, False if not found.
         """
         ...
 
@@ -340,91 +385,75 @@ class EntityTreeHierarchy(Hierarchy, Protocol):
         """
         ...
 
-    def get_descendants(self, entity_id: UUID) -> set[UUID]:
-        """
-        Get all descendants of an entity (children, grandchildren, etc.).
-
-        Args:
-            entity_id: The UUID of the ancestor entity.
-
-        Returns:
-            A set of all descendant entity UUIDs.
-        """
-        ...
-
-    def get_ancestors(self, entity_id: UUID) -> list[UUID]:
-        """
-        Get all ancestors of an entity (parent, grandparent, etc.).
-
-        Args:
-            entity_id: The UUID of the descendant entity.
-
-        Returns:
-            A list of ancestor entity UUIDs, ordered from immediate parent to root.
-        """
-        ...
-
 
 @runtime_checkable
 class AspectMapHierarchy(Hierarchy, Protocol):
     """
-    Protocol for aspect map hierarchies (key-value mapping by aspects).
+    Protocol for aspect map hierarchies (UUID to Aspect mapping).
 
-    Organizes entities by aspect keys rather than entity IDs,
-    allowing multiple entities to be associated with the same key.
+    Maps entity IDs (UUIDs) to Aspect objects, similar to dict[UUID, Aspect].
     """
 
-    def put(self, key: str, entity_id: UUID) -> None:
+    def put(self, entity_id: UUID, aspect: Aspect) -> None:
         """
-        Associate an entity with a key.
+        Associate an aspect with an entity ID.
 
         Args:
-            key: The aspect key.
-            entity_id: The UUID of the entity to associate.
+            entity_id: The UUID of the entity.
+            aspect: The Aspect to associate.
         """
         ...
 
-    def get(self, key: str) -> list[UUID]:
+    def get(self, entity_id: UUID) -> Aspect | None:
         """
-        Get all entities associated with a key.
+        Get the aspect associated with an entity ID.
 
         Args:
-            key: The aspect key to look up.
+            entity_id: The UUID of the entity.
 
         Returns:
-            A list of entity UUIDs associated with this key.
+            The Aspect if found, None otherwise.
         """
         ...
 
-    def remove_key(self, key: str) -> bool:
+    def remove(self, entity_id: UUID) -> Aspect | None:
         """
-        Remove all entities associated with a key.
+        Remove and return the aspect for an entity ID.
 
         Args:
-            key: The aspect key to remove.
+            entity_id: The UUID of the entity.
 
         Returns:
-            True if the key existed and was removed, False otherwise.
+            The removed Aspect, or None if not found.
         """
         ...
 
-    def has_key(self, key: str) -> bool:
+    def contains_key(self, entity_id: UUID) -> bool:
         """
-        Check if a key exists in this map.
+        Check if an entity ID has an associated aspect.
 
         Args:
-            key: The key to check.
+            entity_id: The UUID to check.
 
         Returns:
-            True if the key has any associated entities.
+            True if the entity ID has an aspect.
         """
         ...
 
-    def all_keys(self) -> set[str]:
+    def keys(self) -> set[UUID]:
         """
-        Get all keys in this map.
+        Get all entity IDs in this map.
 
         Returns:
-            A set of all keys that have associated entities.
+            A set of all entity UUIDs.
+        """
+        ...
+
+    def values(self) -> list[Aspect]:
+        """
+        Get all aspects in this map.
+
+        Returns:
+            A list of all Aspect instances.
         """
         ...

@@ -38,50 +38,6 @@ class AspectDef(Protocol):
         """
         ...
 
-    def get_property_def(self, property_name: str) -> PropertyDef | None:
-        """
-        Get a specific property definition by name.
-
-        Args:
-            property_name: The name of the property to retrieve.
-
-        Returns:
-            The PropertyDef if found, None otherwise.
-        """
-        ...
-
-    def has_property(self, property_name: str) -> bool:
-        """
-        Check if this aspect defines a property with the given name.
-
-        Args:
-            property_name: The property name to check.
-
-        Returns:
-            True if the property is defined in this aspect.
-        """
-        ...
-
-    @property
-    def required_properties(self) -> set[str]:
-        """
-        Get the names of all required properties in this aspect.
-
-        Returns:
-            A set of property names that must have values.
-        """
-        ...
-
-    @property
-    def description(self) -> str | None:
-        """
-        Get a human-readable description of this aspect.
-
-        Returns:
-            A description of the aspect, or None if not available.
-        """
-        ...
-
 
 @runtime_checkable
 class Aspect(Protocol):
@@ -99,16 +55,6 @@ class Aspect(Protocol):
 
         Returns:
             The AspectDef describing this aspect's structure.
-        """
-        ...
-
-    @property
-    def name(self) -> str:
-        """
-        Get the name of this aspect (convenience accessor).
-
-        Returns:
-            The aspect name from its definition.
         """
         ...
 
@@ -146,79 +92,5 @@ class Aspect(Protocol):
             KeyError: If the property is not defined in this aspect's schema.
             ValueError: If the value doesn't satisfy the property's constraints.
             TypeError: If the value type doesn't match the property type.
-        """
-        ...
-
-    def get_value(self, property_name: str) -> PropertyValue:
-        """
-        Get the value of a property (convenience method).
-
-        Args:
-            property_name: The name of the property.
-
-        Returns:
-            The property value, or None if not set or not found.
-        """
-        ...
-
-    def has_property(self, property_name: str) -> bool:
-        """
-        Check if this aspect has a property with the given name.
-
-        Args:
-            property_name: The property name to check.
-
-        Returns:
-            True if the property exists in this aspect.
-        """
-        ...
-
-    def clear_property(self, property_name: str) -> None:
-        """
-        Clear the value of a property, resetting it to default or None.
-
-        Args:
-            property_name: The name of the property to clear.
-        """
-        ...
-
-    def property_names(self) -> Iterable[str]:
-        """
-        Get an iterable of all property names in this aspect.
-
-        Returns:
-            An iterable of property names.
-        """
-        ...
-
-    def validate(self) -> bool:
-        """
-        Validate that all properties satisfy their constraints.
-
-        Returns:
-            True if all property values are valid and all required properties are set.
-        """
-        ...
-
-    def to_dict(self) -> dict[str, Any]:
-        """
-        Convert this aspect to a dictionary representation.
-
-        Returns:
-            A dictionary mapping property names to their values.
-        """
-        ...
-
-    def update_from_dict(self, data: dict[str, Any]) -> None:
-        """
-        Update property values from a dictionary.
-
-        Args:
-            data: A dictionary mapping property names to values.
-
-        Raises:
-            KeyError: If a property name in the dict is not defined in this aspect.
-            ValueError: If a value doesn't satisfy its property's constraints.
-            TypeError: If a value type doesn't match its property type.
         """
         ...

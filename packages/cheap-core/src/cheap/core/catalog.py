@@ -6,57 +6,58 @@ from typing import TYPE_CHECKING, Iterable, Protocol, runtime_checkable
 from uuid import UUID
 
 if TYPE_CHECKING:
+    from cheap.core.aspect import AspectDef
     from cheap.core.catalog_species import CatalogSpecies
     from cheap.core.entity import Entity
     from cheap.core.hierarchy import Hierarchy
 
 
 @runtime_checkable
-class CatalogDef(Protocol):
+class HierarchyDef(Protocol):
     """
-    Protocol defining the structure and metadata of a catalog.
+    Protocol defining the structure of a hierarchy.
 
-    A CatalogDef describes a catalog's name, species (role), and configuration,
-    serving as a schema for catalog instances.
+    A HierarchyDef describes a hierarchy's name and type, serving as a schema.
     """
 
     @property
     def name(self) -> str:
         """
-        Get the name of this catalog definition.
+        Get the name of this hierarchy definition.
 
         Returns:
-            The catalog name.
+            The hierarchy name.
+        """
+        ...
+
+
+@runtime_checkable
+class CatalogDef(Protocol):
+    """
+    Protocol defining the structure and schema of a catalog.
+
+    A CatalogDef contains the aspect definitions and hierarchy definitions
+    that define the structure of catalog data. This is separate from Catalog
+    instances which contain actual data.
+    """
+
+    @property
+    def aspect_defs(self) -> dict[str, AspectDef]:
+        """
+        Get all aspect definitions in this catalog definition.
+
+        Returns:
+            A mapping from aspect names to their definitions.
         """
         ...
 
     @property
-    def species(self) -> CatalogSpecies:
+    def hierarchy_defs(self) -> dict[str, HierarchyDef]:
         """
-        Get the species (type/role) of this catalog.
+        Get all hierarchy definitions in this catalog definition.
 
         Returns:
-            The CatalogSpecies defining the catalog's role in the data pipeline.
-        """
-        ...
-
-    @property
-    def description(self) -> str | None:
-        """
-        Get a human-readable description of this catalog.
-
-        Returns:
-            A description of the catalog, or None if not available.
-        """
-        ...
-
-    @property
-    def version(self) -> str:
-        """
-        Get the version of this catalog definition.
-
-        Returns:
-            A version string (e.g., semantic version).
+            A mapping from hierarchy names to their definitions.
         """
         ...
 
@@ -72,32 +73,32 @@ class Catalog(Protocol):
     """
 
     @property
-    def definition(self) -> CatalogDef:
-        """
-        Get the definition (schema) for this catalog.
-
-        Returns:
-            The CatalogDef describing this catalog's structure.
-        """
-        ...
-
-    @property
     def name(self) -> str:
         """
-        Get the name of this catalog (convenience accessor).
+        Get the name of this catalog.
 
         Returns:
-            The catalog name from its definition.
+            The catalog name.
         """
         ...
 
     @property
     def species(self) -> CatalogSpecies:
         """
-        Get the species of this catalog (convenience accessor).
+        Get the species (type/role) of this catalog.
 
         Returns:
-            The CatalogSpecies from its definition.
+            The CatalogSpecies defining the catalog's role.
+        """
+        ...
+
+    @property
+    def version(self) -> str:
+        """
+        Get the version of this catalog.
+
+        Returns:
+            A version string (e.g., semantic version).
         """
         ...
 

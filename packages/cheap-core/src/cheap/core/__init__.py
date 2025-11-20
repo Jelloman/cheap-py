@@ -13,7 +13,7 @@ from cheap.core.property_type import PropertyType, PropertyTypeLiteral, Property
 
 # Core protocols
 from cheap.core.aspect import Aspect, AspectDef
-from cheap.core.catalog import Catalog, CatalogDef
+from cheap.core.catalog import Catalog, CatalogDef, HierarchyDef
 from cheap.core.entity import Entity
 from cheap.core.hierarchy import (
     AspectMapHierarchy,
@@ -22,6 +22,7 @@ from cheap.core.hierarchy import (
     EntitySetHierarchy,
     EntityTreeHierarchy,
     Hierarchy,
+    Node,
 )
 from cheap.core.property import Property, PropertyDef
 
@@ -45,8 +46,10 @@ __all__ = [
     # Catalog protocols
     "Catalog",
     "CatalogDef",
+    "HierarchyDef",
     # Hierarchy protocols
     "Hierarchy",
+    "Node",
     "EntityListHierarchy",
     "EntitySetHierarchy",
     "EntityDirectoryHierarchy",

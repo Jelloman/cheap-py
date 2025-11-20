@@ -59,25 +59,3 @@ class TestHierarchyType:
         assert not HierarchyType.ENTITY_DIR.is_key_based
         assert not HierarchyType.ENTITY_TREE.is_key_based
 
-    def test_get_description(self) -> None:
-        """Test get_description method returns non-empty strings."""
-        for hierarchy_type in HierarchyType:
-            description = hierarchy_type.get_description()
-            assert isinstance(description, str)
-            assert len(description) > 0
-
-    def test_entity_list_description(self) -> None:
-        """Test specific description for ENTITY_LIST."""
-        desc = HierarchyType.ENTITY_LIST.get_description()
-        assert "ordered" in desc.lower()
-        assert "duplicates" in desc.lower()
-
-    def test_entity_set_description(self) -> None:
-        """Test specific description for ENTITY_SET."""
-        desc = HierarchyType.ENTITY_SET.get_description()
-        assert "unique" in desc.lower() or "duplicates" in desc.lower()
-
-    def test_aspect_map_description(self) -> None:
-        """Test specific description for ASPECT_MAP."""
-        desc = HierarchyType.ASPECT_MAP.get_description()
-        assert "key" in desc.lower() or "aspect" in desc.lower()

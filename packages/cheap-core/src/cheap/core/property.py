@@ -48,34 +48,42 @@ class PropertyDef(Protocol):
         ...
 
     @property
+    def is_unique(self) -> bool:
+        """
+        Check if this property must have unique values across entities.
+
+        Returns:
+            True if values must be unique.
+        """
+        ...
+
+    @property
+    def is_indexed(self) -> bool:
+        """
+        Check if this property should be indexed for queries.
+
+        Returns:
+            True if the property should be indexed.
+        """
+        ...
+
+    @property
+    def is_immutable(self) -> bool:
+        """
+        Check if this property value cannot be changed after initial set.
+
+        Returns:
+            True if the property is immutable.
+        """
+        ...
+
+    @property
     def default_value(self) -> PropertyValue:
         """
         Get the default value for this property if not explicitly set.
 
         Returns:
             The default value, or None if no default is defined.
-        """
-        ...
-
-    @property
-    def description(self) -> str | None:
-        """
-        Get a human-readable description of this property.
-
-        Returns:
-            A description of the property, or None if not available.
-        """
-        ...
-
-    def validate_value(self, value: Any) -> bool:
-        """
-        Validate whether a value is acceptable for this property.
-
-        Args:
-            value: The value to validate.
-
-        Returns:
-            True if the value satisfies this property's constraints.
         """
         ...
 
@@ -120,49 +128,5 @@ class Property(Protocol):
         Raises:
             ValueError: If the value doesn't satisfy the property's constraints.
             TypeError: If the value type doesn't match the property type.
-        """
-        ...
-
-    @property
-    def name(self) -> str:
-        """
-        Get the name of this property (convenience accessor).
-
-        Returns:
-            The property name from its definition.
-        """
-        ...
-
-    @property
-    def property_type(self) -> PropertyType:
-        """
-        Get the data type of this property (convenience accessor).
-
-        Returns:
-            The PropertyType from its definition.
-        """
-        ...
-
-    def is_set(self) -> bool:
-        """
-        Check if this property has been explicitly set (not just default).
-
-        Returns:
-            True if the property has an explicitly set value.
-        """
-        ...
-
-    def clear(self) -> None:
-        """
-        Clear the property value, resetting it to its default or None.
-        """
-        ...
-
-    def validate(self) -> bool:
-        """
-        Validate that the current value satisfies all constraints.
-
-        Returns:
-            True if the current value is valid.
         """
         ...
