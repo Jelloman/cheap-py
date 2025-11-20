@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from cheap.core.catalog_species import CatalogSpecies
     from cheap.core.entity import Entity
     from cheap.core.hierarchy import Hierarchy
+    from cheap.core.hierarchy_type import HierarchyType
 
 
 @runtime_checkable
@@ -27,6 +28,16 @@ class HierarchyDef(Protocol):
 
         Returns:
             The hierarchy name.
+        """
+        ...
+
+    @property
+    def hierarchy_type(self) -> HierarchyType:
+        """
+        Get the type of this hierarchy.
+
+        Returns:
+            The HierarchyType of this hierarchy definition.
         """
         ...
 
@@ -102,69 +113,27 @@ class Catalog(Protocol):
         """
         ...
 
-    def get_entity(self, entity_id: UUID) -> Entity | None:
+    def add_aspect_def(self, aspect_def: AspectDef) -> None:
         """
-        Get an entity by its unique ID.
+        Add an aspect definition to this catalog.
 
         Args:
-            entity_id: The UUID of the entity to retrieve.
-
-        Returns:
-            The Entity if found, None otherwise.
-        """
-        ...
-
-    def add_entity(self, entity: Entity) -> None:
-        """
-        Add or update an entity in this catalog.
-
-        Args:
-            entity: The entity to add or update.
+            aspect_def: The AspectDef to add.
 
         Raises:
-            ValueError: If the entity is not valid for this catalog.
+            ValueError: If an AspectDef with the same name already exists.
         """
         ...
 
-    def remove_entity(self, entity_id: UUID) -> bool:
+    def remove_aspect_def(self, aspect_name: str) -> bool:
         """
-        Remove an entity from this catalog.
+        Remove an aspect definition from this catalog.
 
         Args:
-            entity_id: The UUID of the entity to remove.
+            aspect_name: The name of the aspect definition to remove.
 
         Returns:
-            True if the entity was removed, False if it didn't exist.
-        """
-        ...
-
-    def has_entity(self, entity_id: UUID) -> bool:
-        """
-        Check if this catalog contains an entity with the given ID.
-
-        Args:
-            entity_id: The UUID to check.
-
-        Returns:
-            True if the entity exists in this catalog.
-        """
-        ...
-
-    def entity_count(self) -> int:
-        """
-        Get the total number of entities in this catalog.
-
-        Returns:
-            The count of entities.
-        """
-        ...
-
-    def all_entities(self) -> Iterable[Entity]:
-        """
-        Get an iterable of all entities in this catalog.
-
-        Returns:
-            An iterable of Entity instances.
+            True if the AspectDef was removed, False if it didn't exist.
         """
         ...
 
@@ -222,13 +191,5 @@ class Catalog(Protocol):
 
         Returns:
             A set of hierarchy names.
-        """
-        ...
-
-    def close(self) -> None:
-        """
-        Close this catalog and release any resources.
-
-        After calling close(), the catalog should not be used.
         """
         ...

@@ -48,16 +48,6 @@ class PropertyDef(Protocol):
         ...
 
     @property
-    def is_unique(self) -> bool:
-        """
-        Check if this property must have unique values across entities.
-
-        Returns:
-            True if values must be unique.
-        """
-        ...
-
-    @property
     def is_indexed(self) -> bool:
         """
         Check if this property should be indexed for queries.

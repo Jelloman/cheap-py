@@ -39,18 +39,6 @@ class Hierarchy(Protocol):
         """
         ...
 
-    def contains(self, entity_id: UUID) -> bool:
-        """
-        Check if this hierarchy contains the given entity.
-
-        Args:
-            entity_id: The UUID of the entity to check.
-
-        Returns:
-            True if the entity is in this hierarchy.
-        """
-        ...
-
     def size(self) -> int:
         """
         Get the number of entities in this hierarchy.

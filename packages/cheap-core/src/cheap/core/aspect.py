@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Iterable, Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
+from uuid import UUID
 
 if TYPE_CHECKING:
     from cheap.core.property import Property, PropertyDef
@@ -17,6 +18,16 @@ class AspectDef(Protocol):
     An AspectDef describes an aspect's name and the properties it contains,
     serving as a schema for aspect instances.
     """
+
+    @property
+    def id(self) -> UUID:
+        """
+        Get the unique identifier for this aspect definition.
+
+        Returns:
+            The UUID of this aspect definition.
+        """
+        ...
 
     @property
     def name(self) -> str:

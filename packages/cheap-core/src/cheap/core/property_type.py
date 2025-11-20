@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
+from datetime import datetime
+from decimal import Decimal
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Final, Literal, TypeAlias
-
-if TYPE_CHECKING:
-    from datetime import datetime
-    from decimal import Decimal
-    from uuid import UUID
+from typing import Any, Final, Literal, TypeAlias
+from uuid import UUID
 
 
 # Type aliases for property values
