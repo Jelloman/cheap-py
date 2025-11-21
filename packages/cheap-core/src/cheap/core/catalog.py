@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterable, Protocol, runtime_checkable
-from uuid import UUID
+from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
     from cheap.core.aspect import AspectDef
     from cheap.core.catalog_species import CatalogSpecies
-    from cheap.core.entity import Entity
     from cheap.core.hierarchy import Hierarchy
     from cheap.core.hierarchy_type import HierarchyType
 
