@@ -1,0 +1,77 @@
+name: Build Cheap Python
+
+on:
+  push:
+    paths:
+      - 'packages/cheap-core/**'
+      - 'packages/cheap-json/**'
+      - 'packages/cheap-db-sqlite/**'
+      - 'packages/cheap-db-postgres/**'
+      - 'packages/cheap-db-mariadb/**'
+      - 'packages/cheap-rest/**'
+      - 'packages/cheap-rest-client/**'
+      - 'packages/integration-tests/**'
+      - 'pyproject.toml'
+      - 'noxfile.py'
+      - '.github/workflows/build-cheap-python.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12', '3.13']
+      fail-fast: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Hatch
+        run: |
+          python -m pip install --upgrade pip
+          pip install hatch
+
+      - name: Install Nox
+        run: pip install nox
+
+      - name: Run Pyright type checking
+        if: matrix.python-version == '3.12'
+        run: nox -s typecheck
+
+      - name: Run tests
+        run: nox -s tests-${{ matrix.python-version }}
+
+      - name: Run linting
+        if: matrix.python-version == '3.12'
+        run: nox -s lint
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.python-version }}
+          path: |
+            .coverage
+            coverage.xml
+            htmlcov/
+
+      - name: Build packages
+        if: matrix.python-version == '3.12'
+        run: |
+          cd packages/cheap-core && hatch build
+          # Additional packages will be built as they're implemented
+
+      - name: Upload packages
+        if: matrix.python-version == '3.12'
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-packages
+          path: |
+            packages/*/dist/*.whl
+            packages/*/dist/*.tar.gz
