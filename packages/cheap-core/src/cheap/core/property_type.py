@@ -8,11 +8,8 @@ from enum import Enum
 from typing import Any, Final, Literal, TypeAlias
 from uuid import UUID
 
-
 # Type aliases for property values
-PropertyValue: TypeAlias = (
-    int | float | bool | str | Decimal | datetime | UUID | bytes | None
-)
+PropertyValue: TypeAlias = int | float | bool | str | Decimal | datetime | UUID | bytes | None
 
 
 class PropertyType(Enum):

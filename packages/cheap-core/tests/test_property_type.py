@@ -34,18 +34,18 @@ class TestPropertyType:
 
     def test_python_type_mapping(self) -> None:
         """Test that python_type property returns correct types."""
-        assert PropertyType.INTEGER.python_type == int
-        assert PropertyType.FLOAT.python_type == float
-        assert PropertyType.BIG_INTEGER.python_type == int
-        assert PropertyType.BIG_DECIMAL.python_type == Decimal
-        assert PropertyType.BOOLEAN.python_type == bool
-        assert PropertyType.STRING.python_type == str
-        assert PropertyType.TEXT.python_type == str
-        assert PropertyType.DATE_TIME.python_type == datetime
-        assert PropertyType.URI.python_type == str
-        assert PropertyType.UUID.python_type == UUID
-        assert PropertyType.CLOB.python_type == str
-        assert PropertyType.BLOB.python_type == bytes
+        assert PropertyType.INTEGER.python_type is int
+        assert PropertyType.FLOAT.python_type is float
+        assert PropertyType.BIG_INTEGER.python_type is int
+        assert PropertyType.BIG_DECIMAL.python_type is Decimal
+        assert PropertyType.BOOLEAN.python_type is bool
+        assert PropertyType.STRING.python_type is str
+        assert PropertyType.TEXT.python_type is str
+        assert PropertyType.DATE_TIME.python_type is datetime
+        assert PropertyType.URI.python_type is str
+        assert PropertyType.UUID.python_type is UUID
+        assert PropertyType.CLOB.python_type is str
+        assert PropertyType.BLOB.python_type is bytes
 
     def test_validate_integers(self) -> None:
         """Test validation of integer values."""

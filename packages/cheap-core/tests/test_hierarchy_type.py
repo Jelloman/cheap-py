@@ -18,4 +18,3 @@ class TestHierarchyType:
         """Test string representation of enum values."""
         assert str(HierarchyType.ENTITY_LIST) == "ENTITY_LIST"
         assert repr(HierarchyType.ENTITY_LIST) == "HierarchyType.ENTITY_LIST"
-

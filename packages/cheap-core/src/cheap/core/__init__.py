@@ -7,13 +7,10 @@ structured data.
 """
 
 # Enums
-from cheap.core.catalog_species import CatalogSpecies, CatalogSpeciesLiteral
-from cheap.core.hierarchy_type import HierarchyType, HierarchyTypeLiteral
-from cheap.core.property_type import PropertyType, PropertyTypeLiteral, PropertyValue
-
 # Core protocols
 from cheap.core.aspect import Aspect, AspectDef
 from cheap.core.catalog import Catalog, CatalogDef, HierarchyDef
+from cheap.core.catalog_species import CatalogSpecies, CatalogSpeciesLiteral
 from cheap.core.entity import Entity
 from cheap.core.hierarchy import (
     AspectMapHierarchy,
@@ -24,7 +21,9 @@ from cheap.core.hierarchy import (
     Hierarchy,
     Node,
 )
+from cheap.core.hierarchy_type import HierarchyType, HierarchyTypeLiteral
 from cheap.core.property import Property, PropertyDef
+from cheap.core.property_type import PropertyType, PropertyTypeLiteral, PropertyValue
 
 __all__ = [
     # Enums

@@ -43,8 +43,8 @@ def typecheck(session: nox.Session) -> None:
     # Install packages for type checking
     session.install("-e", "packages/cheap-core", silent=False)
 
-    # Run Pyright
-    session.run("pyright", "packages/", *session.posargs)
+    # Run Pyright (uses pyrightconfig.json to determine what to check)
+    session.run("pyright", *session.posargs)
 
 
 @nox.session(python="3.12")
