@@ -21,8 +21,8 @@ from cheap.core.hierarchy import (
     EntityListHierarchy,
     EntitySetHierarchy,
     EntityTreeHierarchy,
+    EntityTreeNode,
     Hierarchy,
-    Node,
 )
 from cheap.core.property import Property, PropertyDef
 
@@ -63,7 +63,7 @@ __all__ = [
     "HierarchyDef",
     # Hierarchy protocols
     "Hierarchy",
-    "Node",
+    "EntityTreeNode",
     "EntityListHierarchy",
     "EntitySetHierarchy",
     "EntityDirectoryHierarchy",
