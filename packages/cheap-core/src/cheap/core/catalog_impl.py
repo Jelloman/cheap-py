@@ -4,12 +4,21 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
+from uuid import UUID, uuid4
 
 if TYPE_CHECKING:
     from cheap.core.aspect import AspectDef
     from cheap.core.aspect_impl import AspectDefImpl
+    from cheap.core.catalog import Catalog
     from cheap.core.catalog_species import CatalogSpecies
-    from cheap.core.hierarchy import Hierarchy
+    from cheap.core.hierarchy import (
+        AspectMapHierarchy,
+        EntityDirectoryHierarchy,
+        EntityListHierarchy,
+        EntitySetHierarchy,
+        EntityTreeHierarchy,
+        Hierarchy,
+    )
     from cheap.core.hierarchy_type import HierarchyType
 
 
@@ -63,9 +72,11 @@ class CatalogImpl:
     providing a coherent namespace for organizing entities.
     """
 
-    name: str
     species: CatalogSpecies
     version: str
+    global_id: UUID = field(default_factory=uuid4)
+    uri: str | None = None
+    upstream: Catalog | None = None
     _aspect_defs: dict[str, AspectDefImpl] = field(default_factory=dict)
     _hierarchies: dict[str, Hierarchy] = field(default_factory=dict)
 
@@ -81,7 +92,7 @@ class CatalogImpl:
         """
         if aspect_def.name in self._aspect_defs:
             raise ValueError(
-                f"AspectDef '{aspect_def.name}' already exists in catalog '{self.name}'"
+                f"AspectDef '{aspect_def.name}' already exists in catalog"
             )
         self._aspect_defs[aspect_def.name] = aspect_def  # type: ignore
 
@@ -160,9 +171,89 @@ class CatalogImpl:
         """
         return set(self._hierarchies.keys())
 
+    def create_entity_list_hierarchy(self, name: str) -> EntityListHierarchy:
+        """
+        Create a new entity list hierarchy.
+
+        Args:
+            name: The name of the hierarchy.
+
+        Returns:
+            The newly created EntityListHierarchy.
+        """
+        from cheap.core.hierarchy_impl import EntityListHierarchyImpl
+
+        hierarchy = EntityListHierarchyImpl(name=name, catalog=self, version=self.version)
+        self.add_hierarchy(hierarchy)
+        return hierarchy  # type: ignore
+
+    def create_entity_set_hierarchy(self, name: str) -> EntitySetHierarchy:
+        """
+        Create a new entity set hierarchy.
+
+        Args:
+            name: The name of the hierarchy.
+
+        Returns:
+            The newly created EntitySetHierarchy.
+        """
+        from cheap.core.hierarchy_impl import EntitySetHierarchyImpl
+
+        hierarchy = EntitySetHierarchyImpl(name=name, catalog=self, version=self.version)
+        self.add_hierarchy(hierarchy)
+        return hierarchy  # type: ignore
+
+    def create_entity_directory_hierarchy(self, name: str) -> EntityDirectoryHierarchy:
+        """
+        Create a new entity directory hierarchy.
+
+        Args:
+            name: The name of the hierarchy.
+
+        Returns:
+            The newly created EntityDirectoryHierarchy.
+        """
+        from cheap.core.hierarchy_impl import EntityDirectoryHierarchyImpl
+
+        hierarchy = EntityDirectoryHierarchyImpl(name=name, catalog=self, version=self.version)
+        self.add_hierarchy(hierarchy)
+        return hierarchy  # type: ignore
+
+    def create_entity_tree_hierarchy(self, name: str) -> EntityTreeHierarchy:
+        """
+        Create a new entity tree hierarchy.
+
+        Args:
+            name: The name of the hierarchy.
+
+        Returns:
+            The newly created EntityTreeHierarchy.
+        """
+        from cheap.core.hierarchy_impl import EntityTreeHierarchyImpl
+
+        hierarchy = EntityTreeHierarchyImpl(name=name, catalog=self, version=self.version)
+        self.add_hierarchy(hierarchy)
+        return hierarchy  # type: ignore
+
+    def create_aspect_map_hierarchy(self, name: str) -> AspectMapHierarchy:
+        """
+        Create a new aspect map hierarchy.
+
+        Args:
+            name: The name of the hierarchy.
+
+        Returns:
+            The newly created AspectMapHierarchy.
+        """
+        from cheap.core.hierarchy_impl import AspectMapHierarchyImpl
+
+        hierarchy = AspectMapHierarchyImpl(name=name, catalog=self, version=self.version)
+        self.add_hierarchy(hierarchy)
+        return hierarchy  # type: ignore
+
     def __repr__(self) -> str:
         """Return a detailed string representation."""
         return (
-            f"CatalogImpl(name={self.name!r}, species={self.species}, "
+            f"CatalogImpl(global_id={self.global_id}, species={self.species}, "
             f"version={self.version!r}, hierarchies={len(self._hierarchies)})"
         )

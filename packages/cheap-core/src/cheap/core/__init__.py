@@ -36,7 +36,7 @@ from cheap.core.hierarchy_impl import (
     EntityListHierarchyImpl,
     EntitySetHierarchyImpl,
     EntityTreeHierarchyImpl,
-    NodeImpl,
+    EntityTreeNodeImpl,
 )
 from cheap.core.property_impl import PropertyDefImpl, PropertyImpl
 
@@ -87,5 +87,5 @@ __all__ = [
     "EntityDirectoryHierarchyImpl",
     "EntityTreeHierarchyImpl",
     "AspectMapHierarchyImpl",
-    "NodeImpl",
+    "EntityTreeNodeImpl",
 ]
