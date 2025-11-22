@@ -3,24 +3,27 @@ name: Build Cheap Python
 on:
   push:
     paths:
-      - 'packages/cheap-core/**'
-      - 'packages/cheap-json/**'
-      - 'packages/cheap-db-sqlite/**'
-      - 'packages/cheap-db-postgres/**'
-      - 'packages/cheap-db-mariadb/**'
-      - 'packages/cheap-rest/**'
-      - 'packages/cheap-rest-client/**'
-      - 'packages/integration-tests/**'
-      - 'pyproject.toml'
-      - 'noxfile.py'
-      - '.github/workflows/build-cheap-python.yml'
+      - "packages/cheap-core/**"
+      - "packages/cheap-json/**"
+      - "packages/cheap-db-sqlite/**"
+      - "packages/cheap-db-postgres/**"
+      - "packages/cheap-db-mariadb/**"
+      - "packages/cheap-rest/**"
+      - "packages/cheap-rest-client/**"
+      - "packages/integration-tests/**"
+      - "pyproject.toml"
+      - "noxfile.py"
+      - ".github/workflows/build-cheap-python.yml"
+
+env:
+  UV_SYSTEM_PYTHON: 1
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12', '3.13']
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
       fail-fast: false
 
     steps:
@@ -28,28 +31,32 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install Hatch
-        run: |
-          python -m pip install --upgrade pip
-          pip install hatch
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Sync dependencies with uv
+        run: uv sync --locked --all-extras --dev
+
+      - name: Install Hatch using uv
+        run: uv pip install hatch
 
       - name: Install Nox
-        run: pip install nox
+        run: uv pip install nox
 
       - name: Run Pyright type checking
         if: matrix.python-version == '3.12'
-        run: nox -s typecheck
+        run: uv tool run nox -s typecheck
 
       - name: Run tests
-        run: nox -s tests-${{ matrix.python-version }}
+        run: uv tool run nox -s tests-${{ matrix.python-version }}
 
       - name: Run linting
         if: matrix.python-version == '3.12'
-        run: nox -s lint
+        run: uv tool run nox -s lint
 
       - name: Upload test results
         if: always()
