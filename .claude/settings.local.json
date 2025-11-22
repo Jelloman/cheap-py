@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv sync:*)",
+      "Bash(uv pip list:*)",
+      "Bash(python:*)",
+      "Bash(nox -s typecheck:*)",
+      "Bash(uv run basedpyright:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

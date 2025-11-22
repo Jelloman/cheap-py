@@ -1,13 +1,6 @@
 {
-  "include": [
-    "packages/*/src"
-  ],
-  "exclude": [
-    "**/__pycache__",
-    "**/node_modules",
-    "**/.venv",
-    "**/venv"
-  ],
+  "include": ["packages/*/src", "noxfile.py"],
+  "exclude": ["**/__pycache__", "**/node_modules", "**/.venv", "**/venv"],
   "pythonVersion": "3.10",
   "pythonPlatform": "All",
   "typeCheckingMode": "strict",
@@ -67,6 +60,5 @@
   "reportUnsupportedDunderAll": "error",
   "reportUnusedCoroutine": "error",
   "venvPath": ".",
-  "venv": ".venv",
-  "stubPath": "typings"
+  "venv": ".venv"
 }

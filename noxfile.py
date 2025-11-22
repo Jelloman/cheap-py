@@ -3,7 +3,7 @@
 import nox
 
 # Supported Python versions
-PYTHON_VERSIONS = ["3.10", "3.11", "3.12", "3.13"]
+PYTHON_VERSIONS = ["3.11", "3.12", "3.13", "3.14"]
 
 # Default sessions to run
 nox.options.sessions = ["tests", "typecheck", "lint"]
@@ -38,13 +38,14 @@ def tests(session: nox.Session) -> None:
 @nox.session(python="3.12")
 def typecheck(session: nox.Session) -> None:
     """Run Pyright type checking."""
-    session.install("pyright>=1.1.350")
+    session.install("basedpyright>=1.34.0")
 
     # Install packages for type checking
     session.install("-e", "packages/cheap-core", silent=False)
 
-    # Run Pyright (uses pyrightconfig.json to determine what to check)
-    session.run("pyright", *session.posargs)
+    # Run basedpyright (uses pyrightconfig.json to determine what to check)
+    # This will check both packages/*/src and noxfile.py
+    session.run("basedpyright", *session.posargs)
 
 
 @nox.session(python="3.12")
@@ -107,7 +108,8 @@ def docker_integration_tests(session: nox.Session) -> None:
     session.run(
         "pytest",
         "-v",
-        "-m", "docker",
+        "-m",
+        "docker",
         "packages/integration-tests/",
         *session.posargs,
     )
