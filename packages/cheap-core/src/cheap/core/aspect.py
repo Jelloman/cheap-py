@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Protocol, runtime_checkable
 from uuid import UUID
 
 if TYPE_CHECKING:
+    from cheap.core.entity import Entity
     from cheap.core.property import Property, PropertyDef
     from cheap.core.property_type import PropertyValue
 
@@ -49,6 +50,46 @@ class AspectDef(Protocol):
         """
         ...
 
+    @property
+    def is_readable(self) -> bool:
+        """
+        Check if this aspect can be read.
+
+        Returns:
+            True if the aspect is readable.
+        """
+        ...
+
+    @property
+    def is_writable(self) -> bool:
+        """
+        Check if this aspect can be written.
+
+        Returns:
+            True if the aspect is writable.
+        """
+        ...
+
+    @property
+    def can_add_properties(self) -> bool:
+        """
+        Check if new properties can be added to this aspect.
+
+        Returns:
+            True if properties can be added dynamically.
+        """
+        ...
+
+    @property
+    def can_remove_properties(self) -> bool:
+        """
+        Check if properties can be removed from this aspect.
+
+        Returns:
+            True if properties can be removed dynamically.
+        """
+        ...
+
 
 @runtime_checkable
 class Aspect(Protocol):
@@ -76,6 +117,16 @@ class Aspect(Protocol):
 
         Returns:
             A mapping from property names to Property instances.
+        """
+        ...
+
+    @property
+    def entity(self) -> Entity | None:
+        """
+        Get the entity this aspect belongs to.
+
+        Returns:
+            The Entity that owns this aspect, or None if not attached.
         """
         ...
 
