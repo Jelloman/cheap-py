@@ -25,7 +25,9 @@ class TestPropertyImpl:
 
     def test_property_def_creation(self) -> None:
         """Test creating a property definition."""
-        prop_def = PropertyDefImpl(name="age", property_type=PropertyType.INTEGER, is_nullable=False)
+        prop_def = PropertyDefImpl(
+            name="age", property_type=PropertyType.INTEGER, is_nullable=False
+        )
         assert prop_def.name == "age"
         assert prop_def.property_type == PropertyType.INTEGER
         assert prop_def.is_nullable is False
@@ -69,7 +71,9 @@ class TestPropertyImpl:
 
     def test_property_not_nullable(self) -> None:
         """Test that non-nullable properties cannot be set to None."""
-        prop_def = PropertyDefImpl(name="name", property_type=PropertyType.STRING, is_nullable=False)
+        prop_def = PropertyDefImpl(
+            name="name", property_type=PropertyType.STRING, is_nullable=False
+        )
         prop = PropertyImpl(definition=prop_def)
 
         with pytest.raises(ValueError, match="nullable"):

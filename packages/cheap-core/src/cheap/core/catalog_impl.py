@@ -90,9 +90,7 @@ class CatalogImpl:
             ValueError: If an AspectDef with the same name already exists.
         """
         if aspect_def.name in self._aspect_defs:
-            raise ValueError(
-                f"AspectDef '{aspect_def.name}' already exists in catalog"
-            )
+            raise ValueError(f"AspectDef '{aspect_def.name}' already exists in catalog")
         self._aspect_defs[aspect_def.name] = aspect_def  # type: ignore
 
     def remove_aspect_def(self, aspect_name: str) -> bool:
