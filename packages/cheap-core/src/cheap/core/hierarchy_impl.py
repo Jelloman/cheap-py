@@ -6,23 +6,15 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from cheap.core.hierarchy import (
-    AspectMapHierarchy,
-    EntityDirectoryHierarchy,
-    EntityListHierarchy,
-    EntitySetHierarchy,
-    EntityTreeHierarchy,
-    EntityTreeNode,
-)
-
 if TYPE_CHECKING:
     from cheap.core.aspect import Aspect
     from cheap.core.catalog import Catalog
+    from cheap.core.hierarchy import EntityTreeNode
     from cheap.core.hierarchy_type import HierarchyType
 
 
 @dataclass(slots=True)
-class EntityListHierarchyImpl(EntityListHierarchy):
+class EntityListHierarchyImpl:
     """
     Implementation of EntityListHierarchy - ordered list allowing duplicates.
 
@@ -124,7 +116,7 @@ class EntityListHierarchyImpl(EntityListHierarchy):
 
 
 @dataclass(slots=True)
-class EntitySetHierarchyImpl(EntitySetHierarchy):
+class EntitySetHierarchyImpl:
     """
     Implementation of EntitySetHierarchy - unordered set without duplicates.
 
@@ -203,7 +195,7 @@ class EntitySetHierarchyImpl(EntitySetHierarchy):
 
 
 @dataclass(slots=True)
-class EntityDirectoryHierarchyImpl(EntityDirectoryHierarchy):
+class EntityDirectoryHierarchyImpl:
     """
     Implementation of EntityDirectoryHierarchy - flat string-to-entity mapping.
 
@@ -301,7 +293,7 @@ class EntityDirectoryHierarchyImpl(EntityDirectoryHierarchy):
 
 
 @dataclass(slots=True)
-class EntityTreeNodeImpl(EntityTreeNode):
+class EntityTreeNodeImpl:
     """
     Implementation of EntityTreeNode protocol for tree hierarchies.
 
@@ -310,21 +302,21 @@ class EntityTreeNodeImpl(EntityTreeNode):
     """
 
     entity_id: UUID
-    parent: EntityTreeNodeImpl | None = None
-    children: dict[str, EntityTreeNodeImpl] = field(default_factory=dict)
+    parent: EntityTreeNode | None = None
+    children: dict[str, EntityTreeNode] = field(default_factory=dict)
 
-    def add_child(self, name: str, child: EntityTreeNodeImpl) -> None:
+    def add_child(self, name: str, child: EntityTreeNode) -> None:
         """
         Add a child node with a given name.
 
         Args:
             name: The name key for the child.
-            child: The EntityTreeNodeImpl to add as a child.
+            child: The EntityTreeNode to add as a child.
         """
         self.children[name] = child
-        child.parent = self
+        child.parent = self  # type: ignore[assignment]
 
-    def remove_child(self, name: str) -> EntityTreeNodeImpl | None:
+    def remove_child(self, name: str) -> EntityTreeNode | None:
         """
         Remove a child node by name.
 
@@ -336,10 +328,10 @@ class EntityTreeNodeImpl(EntityTreeNode):
         """
         child = self.children.pop(name, None)
         if child is not None:
-            child.parent = None
+            child.parent = None  # type: ignore[misc]
         return child
 
-    def get_child(self, name: str) -> EntityTreeNodeImpl | None:
+    def get_child(self, name: str) -> EntityTreeNode | None:
         """
         Get a child node by name.
 
@@ -347,7 +339,7 @@ class EntityTreeNodeImpl(EntityTreeNode):
             name: The name key of the child.
 
         Returns:
-            The EntityTreeNodeImpl if found, None otherwise.
+            The EntityTreeNode if found, None otherwise.
         """
         return self.children.get(name)
 
@@ -365,7 +357,7 @@ class EntityTreeNodeImpl(EntityTreeNode):
 
 
 @dataclass(slots=True)
-class EntityTreeHierarchyImpl(EntityTreeHierarchy):
+class EntityTreeHierarchyImpl:
     """
     Implementation of EntityTreeHierarchy - tree structure with root node.
 
@@ -373,8 +365,8 @@ class EntityTreeHierarchyImpl(EntityTreeHierarchy):
     """
 
     name: str
-    root: EntityTreeNodeImpl | None = None
-    _nodes: dict[UUID, EntityTreeNodeImpl] = field(default_factory=dict)
+    root: EntityTreeNode | None = None
+    _nodes: dict[UUID, EntityTreeNode] = field(default_factory=dict)
     catalog: Catalog | None = None
     version: str = "1.0.0"
 
@@ -428,7 +420,7 @@ class EntityTreeHierarchyImpl(EntityTreeHierarchy):
         self._nodes[child_id] = child_node
         return True
 
-    def get_node(self, entity_id: UUID) -> EntityTreeNodeImpl | None:
+    def get_node(self, entity_id: UUID) -> EntityTreeNode | None:
         """
         Get the node for an entity.
 
@@ -446,7 +438,7 @@ class EntityTreeHierarchyImpl(EntityTreeHierarchy):
 
 
 @dataclass(slots=True)
-class AspectMapHierarchyImpl(AspectMapHierarchy):
+class AspectMapHierarchyImpl:
     """
     Implementation of AspectMapHierarchy - maps entity IDs to aspects.
 

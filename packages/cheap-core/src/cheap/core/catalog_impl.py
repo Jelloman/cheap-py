@@ -6,11 +6,9 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from cheap.core.catalog import Catalog, CatalogDef, HierarchyDef
-
 if TYPE_CHECKING:
     from cheap.core.aspect import AspectDef
-    from cheap.core.aspect_impl import AspectDefImpl
+    from cheap.core.catalog import Catalog, HierarchyDef
     from cheap.core.catalog_species import CatalogSpecies
     from cheap.core.hierarchy import (
         AspectMapHierarchy,
@@ -24,7 +22,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(frozen=True, slots=True)
-class HierarchyDefImpl(HierarchyDef):
+class HierarchyDefImpl:
     """
     Basic immutable implementation of the HierarchyDef protocol.
 
@@ -45,7 +43,7 @@ class HierarchyDefImpl(HierarchyDef):
 
 
 @dataclass(frozen=True, slots=True)
-class CatalogDefImpl(CatalogDef):
+class CatalogDefImpl:
     """
     Basic immutable implementation of the CatalogDef protocol.
 
@@ -53,8 +51,8 @@ class CatalogDefImpl(CatalogDef):
     hierarchy definitions.
     """
 
-    aspect_defs: dict[str, AspectDefImpl] = field(default_factory=dict)
-    hierarchy_defs: dict[str, HierarchyDefImpl] = field(default_factory=dict)
+    aspect_defs: dict[str, AspectDef] = field(default_factory=dict)
+    hierarchy_defs: dict[str, HierarchyDef] = field(default_factory=dict)
 
     def __repr__(self) -> str:
         """Return a detailed string representation."""
@@ -65,7 +63,7 @@ class CatalogDefImpl(CatalogDef):
 
 
 @dataclass(slots=True)
-class CatalogImpl(Catalog):
+class CatalogImpl:
     """
     Basic mutable implementation of the Catalog protocol.
 
@@ -78,7 +76,7 @@ class CatalogImpl(Catalog):
     global_id: UUID = field(default_factory=uuid4)
     uri: str | None = None
     upstream: Catalog | None = None
-    _aspect_defs: dict[str, AspectDefImpl] = field(default_factory=dict)
+    _aspect_defs: dict[str, AspectDef] = field(default_factory=dict)
     _hierarchies: dict[str, Hierarchy] = field(default_factory=dict)
 
     def add_aspect_def(self, aspect_def: AspectDef) -> None:

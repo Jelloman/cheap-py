@@ -3,18 +3,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
-
-from cheap.core.entity import Entity
 
 if TYPE_CHECKING:
     from cheap.core.aspect import Aspect
-    from cheap.core.aspect_impl import AspectImpl
 
 
 @dataclass(slots=True)
-class EntityImpl(Entity):
+class EntityImpl:
     """
     Basic mutable implementation of the Entity protocol.
 
@@ -23,7 +20,7 @@ class EntityImpl(Entity):
     """
 
     id: UUID = field(default_factory=uuid4)
-    aspects: dict[str, AspectImpl] = field(default_factory=dict)
+    aspects: dict[str, Aspect] = field(default_factory=dict)
 
     def get_aspect(self, aspect_name: str) -> Aspect | None:
         """
@@ -35,9 +32,9 @@ class EntityImpl(Entity):
         Returns:
             The Aspect if found, None otherwise.
         """
-        return cast("Aspect | None", self.aspects.get(aspect_name))
+        return self.aspects.get(aspect_name)
 
-    def add_aspect(self, aspect: AspectImpl) -> None:
+    def add_aspect(self, aspect: Aspect) -> None:
         """
         Add or replace an aspect in this entity.
 

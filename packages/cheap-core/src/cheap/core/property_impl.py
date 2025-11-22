@@ -5,14 +5,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from cheap.core.property import Property, PropertyDef
-
 if TYPE_CHECKING:
+    from cheap.core.property import PropertyDef
     from cheap.core.property_type import PropertyType, PropertyValue
 
 
 @dataclass(frozen=True, slots=True)
-class PropertyDefImpl(PropertyDef):
+class PropertyDefImpl:
     """
     Basic immutable implementation of the PropertyDef protocol.
 
@@ -40,7 +39,7 @@ class PropertyDefImpl(PropertyDef):
 
 
 @dataclass(slots=True)
-class PropertyImpl(Property):
+class PropertyImpl:
     """
     Basic mutable implementation of the Property protocol.
 
@@ -48,7 +47,7 @@ class PropertyImpl(Property):
     allowing the value to be changed while maintaining the schema.
     """
 
-    definition: PropertyDefImpl
+    definition: PropertyDef
     _value: PropertyValue = None
 
     @property
