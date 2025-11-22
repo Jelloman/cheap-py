@@ -7,6 +7,7 @@ from uuid import UUID
 
 if TYPE_CHECKING:
     from cheap.core.aspect import Aspect
+    from cheap.core.catalog import Catalog
     from cheap.core.hierarchy_type import HierarchyType
 
 
@@ -36,6 +37,26 @@ class Hierarchy(Protocol):
 
         Returns:
             The HierarchyType defining this hierarchy's structure.
+        """
+        ...
+
+    @property
+    def catalog(self) -> Catalog | None:
+        """
+        Get the catalog this hierarchy belongs to.
+
+        Returns:
+            The Catalog that owns this hierarchy, or None if not attached.
+        """
+        ...
+
+    @property
+    def version(self) -> str:
+        """
+        Get the version of this hierarchy.
+
+        Returns:
+            A version string (e.g., semantic version).
         """
         ...
 
@@ -255,11 +276,12 @@ class EntityDirectoryHierarchy(Hierarchy, Protocol):
 
 
 @runtime_checkable
-class Node(Protocol):
+class EntityTreeNode(Protocol):
     """
     Protocol representing a node in an EntityTreeHierarchy.
 
-    A Node contains an entity ID and tracks parent-child relationships.
+    An EntityTreeNode contains an entity ID and tracks parent-child relationships.
+    Children are accessed by name keys in a dictionary.
     """
 
     @property
@@ -273,22 +295,56 @@ class Node(Protocol):
         ...
 
     @property
-    def parent(self) -> Node | None:
+    def parent(self) -> EntityTreeNode | None:
         """
         Get the parent node.
 
         Returns:
-            The parent Node, or None if this is the root.
+            The parent EntityTreeNode, or None if this is the root.
         """
         ...
 
     @property
-    def children(self) -> list[Node]:
+    def children(self) -> dict[str, EntityTreeNode]:
         """
-        Get the child nodes.
+        Get the child nodes by name.
 
         Returns:
-            A list of child Node instances.
+            A dictionary mapping child names to EntityTreeNode instances.
+        """
+        ...
+
+    def add_child(self, name: str, child: EntityTreeNode) -> None:
+        """
+        Add a child node with a given name.
+
+        Args:
+            name: The name key for the child.
+            child: The EntityTreeNode to add as a child.
+        """
+        ...
+
+    def remove_child(self, name: str) -> EntityTreeNode | None:
+        """
+        Remove a child node by name.
+
+        Args:
+            name: The name key of the child to remove.
+
+        Returns:
+            The removed EntityTreeNode, or None if not found.
+        """
+        ...
+
+    def get_child(self, name: str) -> EntityTreeNode | None:
+        """
+        Get a child node by name.
+
+        Args:
+            name: The name key of the child.
+
+        Returns:
+            The EntityTreeNode if found, None otherwise.
         """
         ...
 
@@ -303,16 +359,16 @@ class EntityTreeHierarchy(Hierarchy, Protocol):
     """
 
     @property
-    def root(self) -> Node | None:
+    def root(self) -> EntityTreeNode | None:
         """
         Get the root node of this tree.
 
         Returns:
-            The root Node, or None if the tree is empty.
+            The root EntityTreeNode, or None if the tree is empty.
         """
         ...
 
-    def get_node(self, entity_id: UUID) -> Node | None:
+    def get_node(self, entity_id: UUID) -> EntityTreeNode | None:
         """
         Get the node for a given entity ID.
 
@@ -320,7 +376,7 @@ class EntityTreeHierarchy(Hierarchy, Protocol):
             entity_id: The UUID of the entity.
 
         Returns:
-            The Node if found, None otherwise.
+            The EntityTreeNode if found, None otherwise.
         """
         ...
 

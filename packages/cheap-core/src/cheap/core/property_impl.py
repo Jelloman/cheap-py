@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from cheap.core.property import PropertyDef
     from cheap.core.property_type import PropertyType, PropertyValue
 
 
@@ -15,15 +16,17 @@ class PropertyDefImpl:
     Basic immutable implementation of the PropertyDef protocol.
 
     This class provides a simple, immutable property definition
-    with name, type, and constraint information.
+    with name, type, and constraint information matching the Java implementation.
     """
 
     name: str
     property_type: PropertyType
-    is_required: bool = False
-    is_indexed: bool = False
-    is_immutable: bool = False
     default_value: PropertyValue = None
+    has_default_value: bool = False
+    is_readable: bool = True
+    is_writable: bool = True
+    is_nullable: bool = True
+    is_multivalued: bool = False
 
     def __post_init__(self) -> None:
         """Validate the property definition after initialization."""
@@ -44,7 +47,7 @@ class PropertyImpl:
     allowing the value to be changed while maintaining the schema.
     """
 
-    definition: PropertyDefImpl
+    definition: PropertyDef
     _value: PropertyValue = None
 
     @property
@@ -71,16 +74,16 @@ class PropertyImpl:
             ValueError: If the value doesn't satisfy the property's constraints.
             TypeError: If the value type doesn't match the property type.
         """
-        if self.definition.is_immutable and self._value is not None:
-            raise ValueError(f"Cannot modify immutable property '{self.definition.name}'")
+        if not self.definition.is_writable:
+            raise ValueError(f"Cannot write to read-only property '{self.definition.name}'")
 
         if new_value is not None:
             if not self.definition.property_type.validate(new_value):
                 raise TypeError(
                     f"Value {new_value} is not valid for property type {self.definition.property_type}"
                 )
-        elif self.definition.is_required:
-            raise ValueError(f"Cannot set required property '{self.definition.name}' to None")
+        elif not self.definition.is_nullable:
+            raise ValueError(f"Cannot set non-nullable property '{self.definition.name}' to None")
 
         self._value = new_value
 

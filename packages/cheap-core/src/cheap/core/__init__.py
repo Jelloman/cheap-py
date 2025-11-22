@@ -21,8 +21,8 @@ from cheap.core.hierarchy import (
     EntityListHierarchy,
     EntitySetHierarchy,
     EntityTreeHierarchy,
+    EntityTreeNode,
     Hierarchy,
-    Node,
 )
 from cheap.core.property import Property, PropertyDef
 
@@ -36,7 +36,7 @@ from cheap.core.hierarchy_impl import (
     EntityListHierarchyImpl,
     EntitySetHierarchyImpl,
     EntityTreeHierarchyImpl,
-    NodeImpl,
+    EntityTreeNodeImpl,
 )
 from cheap.core.property_impl import PropertyDefImpl, PropertyImpl
 
@@ -63,7 +63,7 @@ __all__ = [
     "HierarchyDef",
     # Hierarchy protocols
     "Hierarchy",
-    "Node",
+    "EntityTreeNode",
     "EntityListHierarchy",
     "EntitySetHierarchy",
     "EntityDirectoryHierarchy",
@@ -87,5 +87,5 @@ __all__ = [
     "EntityDirectoryHierarchyImpl",
     "EntityTreeHierarchyImpl",
     "AspectMapHierarchyImpl",
-    "NodeImpl",
+    "EntityTreeNodeImpl",
 ]

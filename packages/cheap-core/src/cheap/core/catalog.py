@@ -3,11 +3,19 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
+from uuid import UUID
 
 if TYPE_CHECKING:
     from cheap.core.aspect import AspectDef
     from cheap.core.catalog_species import CatalogSpecies
-    from cheap.core.hierarchy import Hierarchy
+    from cheap.core.hierarchy import (
+        AspectMapHierarchy,
+        EntityDirectoryHierarchy,
+        EntityListHierarchy,
+        EntitySetHierarchy,
+        EntityTreeHierarchy,
+        Hierarchy,
+    )
     from cheap.core.hierarchy_type import HierarchyType
 
 
@@ -82,12 +90,32 @@ class Catalog(Protocol):
     """
 
     @property
-    def name(self) -> str:
+    def global_id(self) -> UUID:
         """
-        Get the name of this catalog.
+        Get the globally unique identifier for this catalog.
 
         Returns:
-            The catalog name.
+            The catalog's global UUID.
+        """
+        ...
+
+    @property
+    def uri(self) -> str | None:
+        """
+        Get the URI for this catalog.
+
+        Returns:
+            The catalog URI, or None if not set.
+        """
+        ...
+
+    @property
+    def upstream(self) -> Catalog | None:
+        """
+        Get the upstream catalog this catalog is derived from.
+
+        Returns:
+            The upstream Catalog, or None if this is a source catalog.
         """
         ...
 
@@ -189,5 +217,65 @@ class Catalog(Protocol):
 
         Returns:
             A set of hierarchy names.
+        """
+        ...
+
+    def create_entity_list_hierarchy(self, name: str) -> EntityListHierarchy:
+        """
+        Create a new entity list hierarchy.
+
+        Args:
+            name: The name of the hierarchy.
+
+        Returns:
+            The newly created EntityListHierarchy.
+        """
+        ...
+
+    def create_entity_set_hierarchy(self, name: str) -> EntitySetHierarchy:
+        """
+        Create a new entity set hierarchy.
+
+        Args:
+            name: The name of the hierarchy.
+
+        Returns:
+            The newly created EntitySetHierarchy.
+        """
+        ...
+
+    def create_entity_directory_hierarchy(self, name: str) -> EntityDirectoryHierarchy:
+        """
+        Create a new entity directory hierarchy.
+
+        Args:
+            name: The name of the hierarchy.
+
+        Returns:
+            The newly created EntityDirectoryHierarchy.
+        """
+        ...
+
+    def create_entity_tree_hierarchy(self, name: str) -> EntityTreeHierarchy:
+        """
+        Create a new entity tree hierarchy.
+
+        Args:
+            name: The name of the hierarchy.
+
+        Returns:
+            The newly created EntityTreeHierarchy.
+        """
+        ...
+
+    def create_aspect_map_hierarchy(self, name: str) -> AspectMapHierarchy:
+        """
+        Create a new aspect map hierarchy.
+
+        Args:
+            name: The name of the hierarchy.
+
+        Returns:
+            The newly created AspectMapHierarchy.
         """
         ...

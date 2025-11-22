@@ -7,8 +7,9 @@ from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
 if TYPE_CHECKING:
-    from cheap.core.property import Property
-    from cheap.core.property_impl import PropertyDefImpl, PropertyImpl
+    from cheap.core.aspect import AspectDef
+    from cheap.core.entity import Entity
+    from cheap.core.property import Property, PropertyDef
     from cheap.core.property_type import PropertyValue
 
 
@@ -18,12 +19,16 @@ class AspectDefImpl:
     Basic immutable implementation of the AspectDef protocol.
 
     This class defines the structure of an aspect including its unique
-    identifier, name, and property definitions.
+    identifier, name, property definitions, and access control flags.
     """
 
     name: str
-    properties: dict[str, PropertyDefImpl] = field(default_factory=dict)
+    properties: dict[str, PropertyDef] = field(default_factory=dict)
     id: UUID = field(default_factory=uuid4)
+    is_readable: bool = True
+    is_writable: bool = True
+    can_add_properties: bool = False
+    can_remove_properties: bool = False
 
     def __post_init__(self) -> None:
         """Validate the aspect definition after initialization."""
@@ -44,8 +49,9 @@ class AspectImpl:
     providing a property bag implementation.
     """
 
-    definition: AspectDefImpl
-    properties: dict[str, PropertyImpl] = field(default_factory=dict)
+    definition: AspectDef
+    properties: dict[str, Property] = field(default_factory=dict)
+    entity: Entity | None = None
 
     def __post_init__(self) -> None:
         """Initialize properties from the aspect definition if needed."""

@@ -38,42 +38,62 @@ class PropertyDef(Protocol):
         ...
 
     @property
-    def is_required(self) -> bool:
-        """
-        Check if this property is required (cannot be null/None).
-
-        Returns:
-            True if the property must have a non-None value.
-        """
-        ...
-
-    @property
-    def is_indexed(self) -> bool:
-        """
-        Check if this property should be indexed for queries.
-
-        Returns:
-            True if the property should be indexed.
-        """
-        ...
-
-    @property
-    def is_immutable(self) -> bool:
-        """
-        Check if this property value cannot be changed after initial set.
-
-        Returns:
-            True if the property is immutable.
-        """
-        ...
-
-    @property
     def default_value(self) -> PropertyValue:
         """
         Get the default value for this property if not explicitly set.
 
         Returns:
             The default value, or None if no default is defined.
+        """
+        ...
+
+    @property
+    def has_default_value(self) -> bool:
+        """
+        Check if this property has a default value.
+
+        Returns:
+            True if a default value is defined.
+        """
+        ...
+
+    @property
+    def is_readable(self) -> bool:
+        """
+        Check if this property can be read.
+
+        Returns:
+            True if the property is readable.
+        """
+        ...
+
+    @property
+    def is_writable(self) -> bool:
+        """
+        Check if this property can be written.
+
+        Returns:
+            True if the property is writable.
+        """
+        ...
+
+    @property
+    def is_nullable(self) -> bool:
+        """
+        Check if this property can have a null/None value.
+
+        Returns:
+            True if null values are allowed.
+        """
+        ...
+
+    @property
+    def is_multivalued(self) -> bool:
+        """
+        Check if this property can hold multiple values.
+
+        Returns:
+            True if the property is multivalued (list/collection).
         """
         ...
 
