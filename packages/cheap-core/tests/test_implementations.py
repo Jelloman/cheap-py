@@ -25,11 +25,11 @@ class TestPropertyImpl:
 
     def test_property_def_creation(self) -> None:
         """Test creating a property definition."""
-        prop_def = PropertyDefImpl(name="age", property_type=PropertyType.INTEGER, is_required=True)
+        prop_def = PropertyDefImpl(name="age", property_type=PropertyType.INTEGER, is_nullable=False)
         assert prop_def.name == "age"
         assert prop_def.property_type == PropertyType.INTEGER
-        assert prop_def.is_required is True
-        assert prop_def.is_indexed is False
+        assert prop_def.is_nullable is False
+        assert prop_def.is_readable is True
 
     def test_property_def_with_default(self) -> None:
         """Test property definition with default value."""
@@ -57,23 +57,22 @@ class TestPropertyImpl:
         prop.value = "Alice"
         assert prop.value == "Alice"
 
-    def test_property_immutable(self) -> None:
-        """Test that immutable properties cannot be changed."""
-        prop_def = PropertyDefImpl(name="id", property_type=PropertyType.UUID, is_immutable=True)
+    def test_property_read_only(self) -> None:
+        """Test that read-only properties cannot be changed."""
+        prop_def = PropertyDefImpl(name="id", property_type=PropertyType.UUID, is_writable=False)
         prop = PropertyImpl(definition=prop_def)
 
         test_id = uuid4()
-        prop.value = test_id
 
-        with pytest.raises(ValueError, match="immutable"):
-            prop.value = uuid4()
+        with pytest.raises(ValueError, match="read-only"):
+            prop.value = test_id
 
-    def test_property_required(self) -> None:
-        """Test that required properties cannot be set to None."""
-        prop_def = PropertyDefImpl(name="name", property_type=PropertyType.STRING, is_required=True)
+    def test_property_not_nullable(self) -> None:
+        """Test that non-nullable properties cannot be set to None."""
+        prop_def = PropertyDefImpl(name="name", property_type=PropertyType.STRING, is_nullable=False)
         prop = PropertyImpl(definition=prop_def)
 
-        with pytest.raises(ValueError, match="required"):
+        with pytest.raises(ValueError, match="nullable"):
             prop.value = None
 
 
@@ -250,14 +249,16 @@ class TestCatalogImpl:
 
     def test_catalog_creation(self) -> None:
         """Test creating a catalog."""
-        catalog = CatalogImpl(name="my_catalog", species=CatalogSpecies.SOURCE, version="1.0.0")
-        assert catalog.name == "my_catalog"
+        catalog = CatalogImpl(species=CatalogSpecies.SOURCE, version="1.0.0")
+        assert isinstance(catalog.global_id, UUID)
         assert catalog.species == CatalogSpecies.SOURCE
         assert catalog.version == "1.0.0"
+        assert catalog.uri is None
+        assert catalog.upstream is None
 
     def test_catalog_add_aspect_def(self) -> None:
         """Test adding aspect definitions to a catalog."""
-        catalog = CatalogImpl(name="my_catalog", species=CatalogSpecies.SOURCE, version="1.0.0")
+        catalog = CatalogImpl(species=CatalogSpecies.SOURCE, version="1.0.0")
         aspect_def = AspectDefImpl(name="person")
 
         catalog.add_aspect_def(aspect_def)
@@ -268,7 +269,7 @@ class TestCatalogImpl:
 
     def test_catalog_hierarchies(self) -> None:
         """Test managing hierarchies in a catalog."""
-        catalog = CatalogImpl(name="my_catalog", species=CatalogSpecies.SOURCE, version="1.0.0")
+        catalog = CatalogImpl(species=CatalogSpecies.SOURCE, version="1.0.0")
         hierarchy = EntityListHierarchyImpl(name="entities")
 
         catalog.add_hierarchy(hierarchy)
