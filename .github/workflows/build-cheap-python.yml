@@ -15,6 +15,9 @@ on:
       - "noxfile.py"
       - ".github/workflows/build-cheap-python.yml"
 
+env:
+  UV_SYSTEM_PYTHON: 1
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -46,14 +49,14 @@ jobs:
 
       - name: Run Pyright type checking
         if: matrix.python-version == '3.12'
-        run: nox -s typecheck
+        run: uv tool run nox -s typecheck
 
       - name: Run tests
-        run: nox -s tests-${{ matrix.python-version }}
+        run: uv tool run nox -s tests-${{ matrix.python-version }}
 
       - name: Run linting
         if: matrix.python-version == '3.12'
-        run: nox -s lint
+        run: uv tool run nox -s lint
 
       - name: Upload test results
         if: always()
