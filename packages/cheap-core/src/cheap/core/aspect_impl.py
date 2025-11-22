@@ -97,7 +97,4 @@ class AspectImpl:
 
     def __repr__(self) -> str:
         """Return a detailed string representation."""
-        return (
-            f"AspectImpl(definition={self.definition.name!r}, "
-            f"properties={len(self.properties)})"
-        )
+        return f"AspectImpl(definition={self.definition.name!r}, properties={len(self.properties)})"

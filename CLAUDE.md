@@ -230,6 +230,8 @@ This project uses **uv** for fast dependency management and **Hatch** for buildi
 ### Nox Multi-Version Testing
 **Nox** handles testing across Python 3.11, 3.12, 3.13, 3.14:
 - Define test sessions in `noxfile.py`
+- Uses `uv` as the virtual environment backend (`nox.options.default_venv_backend = "uv"`)
+- This allows nox to use uv-managed Python installations automatically
 - Separate sessions for: tests, typecheck, lint, format
 - Integration tests use Python 3.12 only
 

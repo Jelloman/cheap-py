@@ -3,24 +3,24 @@ name: Build Cheap Python
 on:
   push:
     paths:
-      - 'packages/cheap-core/**'
-      - 'packages/cheap-json/**'
-      - 'packages/cheap-db-sqlite/**'
-      - 'packages/cheap-db-postgres/**'
-      - 'packages/cheap-db-mariadb/**'
-      - 'packages/cheap-rest/**'
-      - 'packages/cheap-rest-client/**'
-      - 'packages/integration-tests/**'
-      - 'pyproject.toml'
-      - 'noxfile.py'
-      - '.github/workflows/build-cheap-python.yml'
+      - "packages/cheap-core/**"
+      - "packages/cheap-json/**"
+      - "packages/cheap-db-sqlite/**"
+      - "packages/cheap-db-postgres/**"
+      - "packages/cheap-db-mariadb/**"
+      - "packages/cheap-rest/**"
+      - "packages/cheap-rest-client/**"
+      - "packages/integration-tests/**"
+      - "pyproject.toml"
+      - "noxfile.py"
+      - ".github/workflows/build-cheap-python.yml"
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12', '3.13']
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
       fail-fast: false
 
     steps:

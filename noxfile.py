@@ -5,6 +5,10 @@ import nox
 # Supported Python versions
 PYTHON_VERSIONS = ["3.11", "3.12", "3.13", "3.14"]
 
+# Use uv as the default virtual environment backend
+# This allows nox to use uv-managed Python installations
+nox.options.default_venv_backend = "uv"
+
 # Default sessions to run
 nox.options.sessions = ["tests", "typecheck", "lint"]
 

@@ -29,9 +29,7 @@ class PropertyDefImpl:
         """Validate the property definition after initialization."""
         if not self.name:
             raise ValueError("Property name cannot be empty")
-        if self.default_value is not None and not self.property_type.validate(
-            self.default_value
-        ):
+        if self.default_value is not None and not self.property_type.validate(self.default_value):
             raise ValueError(
                 f"Default value {self.default_value} is not valid for type {self.property_type}"
             )
@@ -74,9 +72,7 @@ class PropertyImpl:
             TypeError: If the value type doesn't match the property type.
         """
         if self.definition.is_immutable and self._value is not None:
-            raise ValueError(
-                f"Cannot modify immutable property '{self.definition.name}'"
-            )
+            raise ValueError(f"Cannot modify immutable property '{self.definition.name}'")
 
         if new_value is not None:
             if not self.definition.property_type.validate(new_value):
@@ -84,9 +80,7 @@ class PropertyImpl:
                     f"Value {new_value} is not valid for property type {self.definition.property_type}"
                 )
         elif self.definition.is_required:
-            raise ValueError(
-                f"Cannot set required property '{self.definition.name}' to None"
-            )
+            raise ValueError(f"Cannot set required property '{self.definition.name}' to None")
 
         self._value = new_value
 
