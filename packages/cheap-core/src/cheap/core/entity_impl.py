@@ -6,13 +6,15 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, cast
 from uuid import UUID, uuid4
 
+from cheap.core.entity import Entity
+
 if TYPE_CHECKING:
     from cheap.core.aspect import Aspect
     from cheap.core.aspect_impl import AspectImpl
 
 
 @dataclass(slots=True)
-class EntityImpl:
+class EntityImpl(Entity):
     """
     Basic mutable implementation of the Entity protocol.
 

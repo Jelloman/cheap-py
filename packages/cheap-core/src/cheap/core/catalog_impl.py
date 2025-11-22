@@ -6,10 +6,11 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
+from cheap.core.catalog import Catalog, CatalogDef, HierarchyDef
+
 if TYPE_CHECKING:
     from cheap.core.aspect import AspectDef
     from cheap.core.aspect_impl import AspectDefImpl
-    from cheap.core.catalog import Catalog
     from cheap.core.catalog_species import CatalogSpecies
     from cheap.core.hierarchy import (
         AspectMapHierarchy,
@@ -23,7 +24,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(frozen=True, slots=True)
-class HierarchyDefImpl:
+class HierarchyDefImpl(HierarchyDef):
     """
     Basic immutable implementation of the HierarchyDef protocol.
 
@@ -44,7 +45,7 @@ class HierarchyDefImpl:
 
 
 @dataclass(frozen=True, slots=True)
-class CatalogDefImpl:
+class CatalogDefImpl(CatalogDef):
     """
     Basic immutable implementation of the CatalogDef protocol.
 
@@ -64,7 +65,7 @@ class CatalogDefImpl:
 
 
 @dataclass(slots=True)
-class CatalogImpl:
+class CatalogImpl(Catalog):
     """
     Basic mutable implementation of the Catalog protocol.
 

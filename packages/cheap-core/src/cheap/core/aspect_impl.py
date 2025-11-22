@@ -6,6 +6,8 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
+from cheap.core.aspect import Aspect, AspectDef
+
 if TYPE_CHECKING:
     from cheap.core.entity import Entity
     from cheap.core.property import Property
@@ -14,7 +16,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(frozen=True, slots=True)
-class AspectDefImpl:
+class AspectDefImpl(AspectDef):
     """
     Basic immutable implementation of the AspectDef protocol.
 
@@ -41,7 +43,7 @@ class AspectDefImpl:
 
 
 @dataclass(slots=True)
-class AspectImpl:
+class AspectImpl(Aspect):
     """
     Basic mutable implementation of the Aspect protocol.
 

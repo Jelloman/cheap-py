@@ -6,6 +6,15 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 from uuid import UUID
 
+from cheap.core.hierarchy import (
+    AspectMapHierarchy,
+    EntityDirectoryHierarchy,
+    EntityListHierarchy,
+    EntitySetHierarchy,
+    EntityTreeHierarchy,
+    EntityTreeNode,
+)
+
 if TYPE_CHECKING:
     from cheap.core.aspect import Aspect
     from cheap.core.catalog import Catalog
@@ -13,7 +22,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(slots=True)
-class EntityListHierarchyImpl:
+class EntityListHierarchyImpl(EntityListHierarchy):
     """
     Implementation of EntityListHierarchy - ordered list allowing duplicates.
 
@@ -115,7 +124,7 @@ class EntityListHierarchyImpl:
 
 
 @dataclass(slots=True)
-class EntitySetHierarchyImpl:
+class EntitySetHierarchyImpl(EntitySetHierarchy):
     """
     Implementation of EntitySetHierarchy - unordered set without duplicates.
 
@@ -194,7 +203,7 @@ class EntitySetHierarchyImpl:
 
 
 @dataclass(slots=True)
-class EntityDirectoryHierarchyImpl:
+class EntityDirectoryHierarchyImpl(EntityDirectoryHierarchy):
     """
     Implementation of EntityDirectoryHierarchy - flat string-to-entity mapping.
 
@@ -292,7 +301,7 @@ class EntityDirectoryHierarchyImpl:
 
 
 @dataclass(slots=True)
-class EntityTreeNodeImpl:
+class EntityTreeNodeImpl(EntityTreeNode):
     """
     Implementation of EntityTreeNode protocol for tree hierarchies.
 
@@ -356,7 +365,7 @@ class EntityTreeNodeImpl:
 
 
 @dataclass(slots=True)
-class EntityTreeHierarchyImpl:
+class EntityTreeHierarchyImpl(EntityTreeHierarchy):
     """
     Implementation of EntityTreeHierarchy - tree structure with root node.
 
@@ -437,7 +446,7 @@ class EntityTreeHierarchyImpl:
 
 
 @dataclass(slots=True)
-class AspectMapHierarchyImpl:
+class AspectMapHierarchyImpl(AspectMapHierarchy):
     """
     Implementation of AspectMapHierarchy - maps entity IDs to aspects.
 
