@@ -192,10 +192,7 @@ class DataclassAspect:
             TypeError: If instance is not an instance of the dataclass type.
         """
         if not isinstance(instance, definition.dataclass_type):
-            msg = (
-                f"Instance must be of type {definition.dataclass_type}, "
-                f"got {type(instance)}"
-            )
+            msg = f"Instance must be of type {definition.dataclass_type}, got {type(instance)}"
             raise TypeError(msg)
 
         self._definition = definition
@@ -218,10 +215,7 @@ class DataclassAspect:
         Raises:
             NotImplementedError: This aspect uses direct field access.
         """
-        msg = (
-            "DataclassAspect accesses fields directly. "
-            "Use get_property() to read field values."
-        )
+        msg = "DataclassAspect accesses fields directly. Use get_property() to read field values."
         raise NotImplementedError(msg)
 
     @property
@@ -268,7 +262,9 @@ class DataclassAspect:
             AttributeError: If the field cannot be set.
         """
         if property_name not in self._definition.properties:
-            raise KeyError(f"Property '{property_name}' not defined in aspect '{self._definition.name}'")
+            raise KeyError(
+                f"Property '{property_name}' not defined in aspect '{self._definition.name}'"
+            )
 
         if not self._definition.is_writable:
             raise ValueError(
@@ -291,7 +287,9 @@ class DataclassAspect:
             KeyError: If the property is not defined.
         """
         if property_name not in self._definition.properties:
-            raise KeyError(f"Property '{property_name}' not defined in aspect '{self._definition.name}'")
+            raise KeyError(
+                f"Property '{property_name}' not defined in aspect '{self._definition.name}'"
+            )
 
         return getattr(self._instance, property_name)
 
