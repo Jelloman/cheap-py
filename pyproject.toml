@@ -29,6 +29,7 @@ dependencies = [
     "cheap-db-sqlite",
     "cheap-db-postgres",
     "cheap-db-mariadb",
+    "cheap-rest",
 ]
 
 [project.optional-dependencies]
@@ -47,6 +48,7 @@ cheap-json = { workspace = true }
 cheap-db-sqlite = { workspace = true }
 cheap-db-postgres = { workspace = true }
 cheap-db-mariadb = { workspace = true }
+cheap-rest = { workspace = true }
 
 # UV workspace configuration
 [tool.uv.workspace]
@@ -56,6 +58,7 @@ members = [
     "packages/cheap-db-sqlite",
     "packages/cheap-db-postgres",
     "packages/cheap-db-mariadb",
+    "packages/cheap-rest",
 ]
 
 # Workspace configuration for monorepo
