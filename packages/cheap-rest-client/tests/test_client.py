@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 import httpx
 import pytest
 import respx
-
 from cheap.core.catalog_species import CatalogSpecies
+
 from cheap.rest.client import (
     AsyncCheapClient,
     CheapClient,
@@ -235,7 +235,9 @@ class TestCheapClientAsync:
             )
 
             async with AsyncCheapClient(base_url="http://localhost:8000") as client:
-                catalog = await client.create_catalog(species=CatalogSpecies.SOURCE, version="1.0.0")
+                catalog = await client.create_catalog(
+                    species=CatalogSpecies.SOURCE, version="1.0.0"
+                )
 
                 assert catalog.global_id == catalog_id
                 assert catalog.species == CatalogSpecies.SOURCE

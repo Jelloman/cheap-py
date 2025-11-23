@@ -10,11 +10,11 @@ from cheap.rest.client.exceptions import (
 )
 
 __all__ = [
-    "CheapClient",
     "AsyncCheapClient",
+    "CheapClient",
     "CheapClientConfig",
+    "CheapRestBadRequestException",
     "CheapRestClientException",
     "CheapRestNotFoundException",
-    "CheapRestBadRequestException",
     "CheapRestServerException",
 ]

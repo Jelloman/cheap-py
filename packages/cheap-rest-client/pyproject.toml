@@ -68,4 +68,18 @@ target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "UP", "ANN", "B", "A", "COM", "C4", "DTZ", "ISC", "ICN", "G", "PIE", "PT", "RET", "SIM", "ARG", "PTH", "PD", "PGH", "PL", "TRY", "NPY", "RUF"]
-ignore = ["ANN101", "ANN102", "COM812", "ISC001"]
+ignore = [
+    "ANN101",   # Missing type annotation for self
+    "ANN102",   # Missing type annotation for cls
+    "COM812",   # Trailing comma (conflicts with formatter)
+    "ISC001",   # Implicit string concatenation (conflicts with formatter)
+    "ANN401",   # Dynamically typed expressions (Any) - needed for httpx compatibility
+    "PLR2004",  # Magic value comparisons - HTTP status codes are standard
+    "TRY003",   # Long exception messages - descriptive errors are better
+    "TRY300",   # else block recommendation - current style is clearer
+    "PLC0415",  # Import not at top - asyncio import is conditional for async-only code
+    "N818",     # Exception naming - follows REST/HTTP convention (e.g., NotFoundException)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["ARG001"]  # Unused function arguments in test fixtures
