@@ -24,6 +24,7 @@ def tests(session: nox.Session) -> None:
         "pytest-asyncio>=1.3.0",
         "pytest-xdist>=3.8.0",
         "httpx>=0.27.0",  # Required for FastAPI TestClient
+        "respx>=0.21.0",  # For mocking httpx requests
     )
 
     # Install all packages in development mode
@@ -33,6 +34,7 @@ def tests(session: nox.Session) -> None:
     session.install("-e", "packages/cheap-db-postgres", silent=False)
     session.install("-e", "packages/cheap-db-mariadb", silent=False)
     session.install("-e", "packages/cheap-rest", silent=False)
+    session.install("-e", "packages/cheap-rest-client", silent=False)
     # Additional packages will be added as they're implemented
 
     # Run tests with coverage
@@ -59,6 +61,7 @@ def typecheck(session: nox.Session) -> None:
     session.install("-e", "packages/cheap-db-postgres", silent=False)
     session.install("-e", "packages/cheap-db-mariadb", silent=False)
     session.install("-e", "packages/cheap-rest", silent=False)
+    session.install("-e", "packages/cheap-rest-client", silent=False)
 
     # Run basedpyright (uses pyrightconfig.json to determine what to check)
     # This will check both packages/*/src and noxfile.py
@@ -102,6 +105,7 @@ def integration_tests(session: nox.Session) -> None:
     session.install("-e", "packages/cheap-db-postgres", silent=False)
     session.install("-e", "packages/cheap-db-mariadb", silent=False)
     session.install("-e", "packages/cheap-rest", silent=False)
+    session.install("-e", "packages/cheap-rest-client", silent=False)
     # Additional packages will be added as they're implemented
 
     # Run integration tests
@@ -124,6 +128,7 @@ def docker_integration_tests(session: nox.Session) -> None:
 
     # Install all packages
     session.install("-e", "packages/cheap-rest", silent=False)
+    session.install("-e", "packages/cheap-rest-client", silent=False)
     session.install("-e", "packages/cheap-core", silent=False)
     session.install("-e", "packages/cheap-json", silent=False)
     session.install("-e", "packages/cheap-db-sqlite", silent=False)
