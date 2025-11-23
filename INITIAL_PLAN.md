@@ -755,6 +755,35 @@ cheap-db-sqlite  cheap-db-postgres  cheap-db-mariadb
   - Check PyPI for stub packages for each dependency
   - Configure Pyright to use stub paths
 
+#### Pre-Commit Workflow (CRITICAL)
+**ALWAYS run formatting before committing** to ensure GitHub Actions checks pass:
+
+```bash
+# 1. Format code with ruff (REQUIRED before every commit)
+nox -s format
+
+# 2. Run type checking
+nox -s typecheck
+
+# 3. Run tests
+nox -s tests
+
+# 4. Stage and commit
+git add <files>
+git commit -m "Your commit message"
+
+# 5. Push
+git push -u origin <branch-name>
+```
+
+**Pre-Commit Checklist**:
+- ✓ `nox -s format` - Auto-format all code (REQUIRED)
+- ✓ `nox -s typecheck` - Verify no type errors
+- ✓ `nox -s tests` - Ensure all tests pass
+- ✓ All three must pass before pushing
+
+**Why**: GitHub Actions will reject commits with formatting/linting errors. Running `nox -s format` before committing prevents CI failures.
+
 ### Optional Enhancements
 - **Pydantic V2:** For runtime validation and serialization (very fast) - useful for REST API
 - **SQLAlchemy 2.0:** For unified database abstraction layer across all database modules
