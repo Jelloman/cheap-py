@@ -3,7 +3,9 @@
 import nox
 
 # Supported Python versions
-PYTHON_VERSIONS = ["3.11", "3.12", "3.13", "3.14"]
+# old PYTHON_VERSIONS "3.11", "3.12", "3.13", "3.14"
+PYTHON_VERSIONS = ["3.14"]
+
 
 # Use uv as the default virtual environment backend
 # This allows nox to use uv-managed Python installations
@@ -17,10 +19,10 @@ nox.options.sessions = ["tests", "typecheck", "lint"]
 def tests(session: nox.Session) -> None:
     """Run unit tests for all packages across multiple Python versions."""
     session.install(
-        "pytest>=7.4.0",
-        "pytest-cov>=4.1.0",
-        "pytest-asyncio>=0.21.0",
-        "pytest-xdist>=3.3.0",
+        "pytest>=9.0.1",
+        "pytest-cov>=7.0.0",
+        "pytest-asyncio>=1.3.0",
+        "pytest-xdist>=3.8.0",
     )
 
     # Install all packages in development mode
@@ -40,7 +42,7 @@ def tests(session: nox.Session) -> None:
     )
 
 
-@nox.session(python="3.12")
+@nox.session(python="3.14")
 def typecheck(session: nox.Session) -> None:
     """Run Pyright type checking."""
     session.install("basedpyright>=1.34.0")
@@ -54,7 +56,7 @@ def typecheck(session: nox.Session) -> None:
     session.run("basedpyright", *session.posargs)
 
 
-@nox.session(python="3.12")
+@nox.session(python="3.14")
 def lint(session: nox.Session) -> None:
     """Run ruff linting and formatting checks."""
     session.install("ruff>=0.2.0")
@@ -66,7 +68,7 @@ def lint(session: nox.Session) -> None:
     session.run("ruff", "format", "--check", "packages/", *session.posargs)
 
 
-@nox.session(python="3.12")
+@nox.session(python="3.14")
 def format(session: nox.Session) -> None:
     """Format code with ruff."""
     session.install("ruff>=0.2.0")
@@ -75,12 +77,12 @@ def format(session: nox.Session) -> None:
     session.run("ruff", "format", "packages/", *session.posargs)
 
 
-@nox.session(python="3.12")
+@nox.session(python="3.14")
 def integration_tests(session: nox.Session) -> None:
     """Run integration tests."""
     session.install(
-        "pytest>=7.4.0",
-        "pytest-asyncio>=0.21.0",
+        "pytest>=9.0.1",
+        "pytest-asyncio>=1.3.0",
         "testcontainers>=3.7.0",
     )
 
@@ -98,13 +100,13 @@ def integration_tests(session: nox.Session) -> None:
     )
 
 
-@nox.session(python="3.12")
+@nox.session(python="3.14")
 def docker_integration_tests(session: nox.Session) -> None:
     """Run dockerized integration tests."""
     session.install(
-        "pytest>=7.4.0",
-        "pytest-asyncio>=0.21.0",
-        "testcontainers>=3.7.0",
+        "pytest>=9.0.1",
+        "pytest-asyncio>=1.3.0",
+        "testcontainers>=4.13.3",
     )
 
     # Install all packages
@@ -123,8 +125,8 @@ def docker_integration_tests(session: nox.Session) -> None:
     )
 
 
-@nox.session(python="3.12")
+@nox.session(python="3.14")
 def docs(session: nox.Session) -> None:
     """Build documentation (placeholder for future)."""
-    session.install("sphinx>=7.0.0")
+    session.install("sphinx>=8.2.3")
     session.run("echo", "Documentation build not yet implemented")
