@@ -82,6 +82,30 @@ nox -s integration_tests
 nox -s docker_integration_tests
 ```
 
+### Dependency Management
+```bash
+# CRITICAL: Always run uv lock after adding new dependencies
+# This updates the uv.lock file to ensure reproducible builds
+
+# After adding dependencies to any pyproject.toml file, run:
+uv lock
+
+# This command:
+# - Resolves all dependencies across the workspace
+# - Updates uv.lock with pinned versions
+# - Ensures consistent dependency resolution for all developers
+# - Should be committed along with pyproject.toml changes
+
+# Sync dependencies after updating lock file
+uv sync --extra dev
+```
+
+**When to run `uv lock`:**
+- After adding a new package to workspace members
+- After adding dependencies to any package's pyproject.toml
+- After changing dependency versions or constraints
+- Before committing changes that modify pyproject.toml files
+
 ## Architecture
 
 ### CHEAP Model Components
