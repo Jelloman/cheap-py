@@ -45,6 +45,10 @@ from cheap.core.factory import CheapFactory
 from cheap.core.file_util import CheapFileUtil
 from cheap.core.hasher import CheapHasher
 
+# Reflection-based implementations
+from cheap.core.dataclass_aspect import DataclassAspect, DataclassAspectDef
+from cheap.core.reflection_util import ReflectionUtil
+
 __all__ = [
     # Enums
     "PropertyType",
@@ -97,4 +101,8 @@ __all__ = [
     "CheapFactory",
     "CheapFileUtil",
     "CheapHasher",
+    # Reflection-based implementations
+    "DataclassAspect",
+    "DataclassAspectDef",
+    "ReflectionUtil",
 ]
