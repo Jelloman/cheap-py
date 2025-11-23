@@ -30,6 +30,7 @@ def tests(session: nox.Session) -> None:
     session.install("-e", "packages/cheap-json", silent=False)
     session.install("-e", "packages/cheap-db-sqlite", silent=False)
     session.install("-e", "packages/cheap-db-postgres", silent=False)
+    session.install("-e", "packages/cheap-db-mariadb", silent=False)
     # Additional packages will be added as they're implemented
 
     # Run tests with coverage
@@ -54,6 +55,7 @@ def typecheck(session: nox.Session) -> None:
     session.install("-e", "packages/cheap-json", silent=False)
     session.install("-e", "packages/cheap-db-sqlite", silent=False)
     session.install("-e", "packages/cheap-db-postgres", silent=False)
+    session.install("-e", "packages/cheap-db-mariadb", silent=False)
 
     # Run basedpyright (uses pyrightconfig.json to determine what to check)
     # This will check both packages/*/src and noxfile.py
@@ -95,6 +97,7 @@ def integration_tests(session: nox.Session) -> None:
     session.install("-e", "packages/cheap-json", silent=False)
     session.install("-e", "packages/cheap-db-sqlite", silent=False)
     session.install("-e", "packages/cheap-db-postgres", silent=False)
+    session.install("-e", "packages/cheap-db-mariadb", silent=False)
     # Additional packages will be added as they're implemented
 
     # Run integration tests
@@ -120,6 +123,7 @@ def docker_integration_tests(session: nox.Session) -> None:
     session.install("-e", "packages/cheap-json", silent=False)
     session.install("-e", "packages/cheap-db-sqlite", silent=False)
     session.install("-e", "packages/cheap-db-postgres", silent=False)
+    session.install("-e", "packages/cheap-db-mariadb", silent=False)
     # Additional packages will be added as they're implemented
 
     # Run Docker-based integration tests
