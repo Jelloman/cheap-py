@@ -128,12 +128,32 @@ def _serialize_object(obj: Any) -> dict[str, Any]:
         TypeError: If object type is not supported.
     """
     from cheap.core.aspect import Aspect, AspectDef
+    from cheap.core.aspect_impl import AspectDefImpl, AspectImpl
     from cheap.core.catalog import Catalog, CatalogDef, HierarchyDef
-    from cheap.core.entity import Entity
-    from cheap.core.hierarchy import Hierarchy
+    from cheap.core.catalog_impl import CatalogDefImpl, CatalogImpl, HierarchyDefImpl
+    from cheap.core.entity_impl import EntityImpl
     from cheap.core.property import Property, PropertyDef
+    from cheap.core.property_impl import PropertyDefImpl, PropertyImpl
 
-    if isinstance(obj, PropertyDef):
+    # Check concrete implementations first (more specific), then protocols
+    if isinstance(obj, PropertyDefImpl):
+        return _serialize_property_def(obj)
+    elif isinstance(obj, PropertyImpl):
+        return _serialize_property(obj)
+    elif isinstance(obj, AspectDefImpl):
+        return _serialize_aspect_def(obj)
+    elif isinstance(obj, AspectImpl):
+        return _serialize_aspect(obj)
+    elif isinstance(obj, EntityImpl):
+        return _serialize_entity(obj)
+    elif isinstance(obj, HierarchyDefImpl):
+        return _serialize_hierarchy_def(obj)
+    elif isinstance(obj, CatalogDefImpl):
+        return _serialize_catalog_def(obj)
+    elif isinstance(obj, CatalogImpl):
+        return _serialize_catalog(obj)
+    # Fallback to protocol checks
+    elif isinstance(obj, PropertyDef):
         return _serialize_property_def(obj)
     elif isinstance(obj, Property):
         return _serialize_property(obj)
@@ -141,12 +161,8 @@ def _serialize_object(obj: Any) -> dict[str, Any]:
         return _serialize_aspect_def(obj)
     elif isinstance(obj, Aspect):
         return _serialize_aspect(obj)
-    elif isinstance(obj, Entity):
-        return _serialize_entity(obj)
     elif isinstance(obj, HierarchyDef):
         return _serialize_hierarchy_def(obj)
-    elif isinstance(obj, Hierarchy):
-        return _serialize_hierarchy(obj)
     elif isinstance(obj, CatalogDef):
         return _serialize_catalog_def(obj)
     elif isinstance(obj, Catalog):
@@ -163,10 +179,11 @@ def _serialize_property_def(prop_def: PropertyDef) -> dict[str, Any]:
     }
 
     # Only include non-default values to keep JSON compact
+    # Defaults: is_writable=True, is_nullable=True, is_multivalued=False
     if not prop_def.is_writable:
         result["isWritable"] = False
-    if prop_def.is_nullable:
-        result["isNullable"] = True
+    if not prop_def.is_nullable:
+        result["isNullable"] = False
     if prop_def.is_multivalued:
         result["isMultivalued"] = True
     if prop_def.default_value is not None:
@@ -288,17 +305,22 @@ def _serialize_catalog_def(catalog_def: CatalogDef) -> dict[str, Any]:
 
 def _serialize_catalog(catalog: Catalog) -> dict[str, Any]:
     """Serialize a Catalog to a dictionary."""
+    # CatalogImpl has global_id attribute
+    catalog_id = getattr(catalog, "global_id", getattr(catalog, "id", None))
+
+    # CatalogImpl stores aspect_defs and hierarchies in private attributes
+    aspect_defs = getattr(catalog, "_aspect_defs", {})
+    hierarchies = getattr(catalog, "_hierarchies", {})
+
     result: dict[str, Any] = {
-        "id": str(catalog.id),
+        "id": str(catalog_id),
         "species": catalog.species.value,
         "version": catalog.version,
         "aspectDefs": {
-            name: _serialize_aspect_def(aspect_def)
-            for name, aspect_def in catalog.get_all_aspect_defs().items()
+            name: _serialize_aspect_def(aspect_def) for name, aspect_def in aspect_defs.items()
         },
         "hierarchies": {
-            name: _serialize_hierarchy(hierarchy)
-            for name, hierarchy in catalog.get_all_hierarchies().items()
+            name: _serialize_hierarchy(hierarchy) for name, hierarchy in hierarchies.items()
         },
     }
 

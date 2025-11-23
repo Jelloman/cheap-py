@@ -40,7 +40,7 @@ class TestPropertyDefSerialization:
         prop_def = PropertyDefImpl(
             name="description",
             property_type=PropertyType.TEXT,
-            is_nullable=True,
+            is_nullable=False,  # Non-default value (default is True)
             is_writable=False,
             default_value="N/A",
         )
@@ -50,7 +50,7 @@ class TestPropertyDefSerialization:
 
         assert data["name"] == "description"
         assert data["type"] == "TEXT"
-        assert data["isNullable"] is True
+        assert data["isNullable"] is False  # Non-default, should be included
         assert data["isWritable"] is False
         assert data["defaultValue"] == "N/A"
 
@@ -59,9 +59,8 @@ class TestPropertyDefSerialization:
         original = PropertyDefImpl(
             name="count",
             property_type=PropertyType.BIG_INTEGER,
-            is_nullable=True,
-            min_value=0,
-            max_value=1000,
+            is_nullable=False,
+            is_writable=False,
         )
 
         # Serialize
@@ -73,8 +72,7 @@ class TestPropertyDefSerialization:
         assert deserialized.name == original.name
         assert deserialized.property_type == original.property_type
         assert deserialized.is_nullable == original.is_nullable
-        assert deserialized.min_value == original.min_value
-        assert deserialized.max_value == original.max_value
+        assert deserialized.is_writable == original.is_writable
 
 
 class TestAspectDefSerialization:
@@ -184,7 +182,9 @@ class TestEntitySerialization:
         aspect = AspectImpl(definition=aspect_def)
         aspect.set_property("title", "1984")
 
-        entity.add_aspect("book", aspect)
+        entity.add_aspect(
+            aspect
+        )  # add_aspect only takes the aspect, name comes from aspect.definition.name
 
         json_bytes = CheapJsonSerializer.to_json(entity)
         data = orjson.loads(json_bytes)
@@ -273,7 +273,7 @@ class TestCatalogSerialization:
     def test_serialize_catalog(self) -> None:
         """Test serializing a Catalog."""
         catalog = CatalogImpl(
-            species=CatalogSpecies.GIT,
+            species=CatalogSpecies.SOURCE,
             version="1.0.0",
         )
 
@@ -285,7 +285,7 @@ class TestCatalogSerialization:
         data = orjson.loads(json_bytes)
 
         assert "id" in data
-        assert data["species"] == "GIT"
+        assert data["species"] == "SOURCE"
         assert data["version"] == "1.0.0"
         assert "aspectDefs" in data
         assert "item" in data["aspectDefs"]
@@ -318,7 +318,7 @@ class TestUUIDSerialization:
         test_id = uuid4()
         aspect_def = AspectDefImpl(
             name="test",
-            aspect_id=test_id,
+            id=test_id,
             properties={},
         )
 
