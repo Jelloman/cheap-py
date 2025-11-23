@@ -4,7 +4,7 @@ import nox
 
 # Supported Python versions
 # old PYTHON_VERSIONS "3.11", "3.12", "3.13", "3.14"
-PYTHON_VERSIONS = ["3.14"]
+PYTHON_VERSIONS = ["3.13"]
 
 
 # Use uv as the default virtual environment backend
@@ -29,6 +29,7 @@ def tests(session: nox.Session) -> None:
     session.install("-e", "packages/cheap-core", silent=False)
     session.install("-e", "packages/cheap-json", silent=False)
     session.install("-e", "packages/cheap-db-sqlite", silent=False)
+    session.install("-e", "packages/cheap-db-postgres", silent=False)
     # Additional packages will be added as they're implemented
 
     # Run tests with coverage
@@ -43,7 +44,7 @@ def tests(session: nox.Session) -> None:
     )
 
 
-@nox.session(python="3.14")
+@nox.session(python="3.13")
 def typecheck(session: nox.Session) -> None:
     """Run Pyright type checking."""
     session.install("basedpyright>=1.34.0")
@@ -52,13 +53,14 @@ def typecheck(session: nox.Session) -> None:
     session.install("-e", "packages/cheap-core", silent=False)
     session.install("-e", "packages/cheap-json", silent=False)
     session.install("-e", "packages/cheap-db-sqlite", silent=False)
+    session.install("-e", "packages/cheap-db-postgres", silent=False)
 
     # Run basedpyright (uses pyrightconfig.json to determine what to check)
     # This will check both packages/*/src and noxfile.py
     session.run("basedpyright", *session.posargs)
 
 
-@nox.session(python="3.14")
+@nox.session(python="3.13")
 def lint(session: nox.Session) -> None:
     """Run ruff linting and formatting checks."""
     session.install("ruff>=0.2.0")
@@ -70,7 +72,7 @@ def lint(session: nox.Session) -> None:
     session.run("ruff", "format", "--check", "packages/", *session.posargs)
 
 
-@nox.session(python="3.14")
+@nox.session(python="3.13")
 def format(session: nox.Session) -> None:
     """Format code with ruff."""
     session.install("ruff>=0.2.0")
@@ -79,7 +81,7 @@ def format(session: nox.Session) -> None:
     session.run("ruff", "format", "packages/", *session.posargs)
 
 
-@nox.session(python="3.14")
+@nox.session(python="3.13")
 def integration_tests(session: nox.Session) -> None:
     """Run integration tests."""
     session.install(
@@ -92,6 +94,7 @@ def integration_tests(session: nox.Session) -> None:
     session.install("-e", "packages/cheap-core", silent=False)
     session.install("-e", "packages/cheap-json", silent=False)
     session.install("-e", "packages/cheap-db-sqlite", silent=False)
+    session.install("-e", "packages/cheap-db-postgres", silent=False)
     # Additional packages will be added as they're implemented
 
     # Run integration tests
@@ -103,7 +106,7 @@ def integration_tests(session: nox.Session) -> None:
     )
 
 
-@nox.session(python="3.14")
+@nox.session(python="3.13")
 def docker_integration_tests(session: nox.Session) -> None:
     """Run dockerized integration tests."""
     session.install(
@@ -116,6 +119,7 @@ def docker_integration_tests(session: nox.Session) -> None:
     session.install("-e", "packages/cheap-core", silent=False)
     session.install("-e", "packages/cheap-json", silent=False)
     session.install("-e", "packages/cheap-db-sqlite", silent=False)
+    session.install("-e", "packages/cheap-db-postgres", silent=False)
     # Additional packages will be added as they're implemented
 
     # Run Docker-based integration tests
@@ -129,7 +133,7 @@ def docker_integration_tests(session: nox.Session) -> None:
     )
 
 
-@nox.session(python="3.14")
+@nox.session(python="3.13")
 def docs(session: nox.Session) -> None:
     """Build documentation (placeholder for future)."""
     session.install("sphinx>=8.2.3")
