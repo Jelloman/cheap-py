@@ -6,7 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 CheapPy is a Python port of the Cheap Java project - a git-like system for structured data based on the CHEAP model (Catalog, Hierarchy, Entity, Aspect, Property). This is a comprehensive data caching system organized into 8 modules across three functional categories: core persistence layers, REST API infrastructure, and testing frameworks.
 
-**Important**: All porting work references the **Java implementation only**. The TypeScript port (cheap-ts) is not mature/well-tested and should not be used as an implementation reference.
+**Source Repository**: The Java implementation is at https://github.com/Jelloman/cheap
+
+**Important**: All porting work references the **Java implementation only** from the repository above. The TypeScript port (cheap-ts) is not mature/well-tested and should not be used as an implementation reference.
 
 ## Development Commands
 
@@ -342,6 +344,36 @@ Three workflows in `.github/workflows/`:
 4. Avoid `# type: ignore` - fix the underlying issue
 5. Check `pyrightconfig.json` for strict mode settings
 6. Remember: type checking applies to both package code and `noxfile.py`
+
+### Committing Code
+**CRITICAL**: Always run formatting before committing to ensure CI checks pass:
+
+```bash
+# 1. Format code with ruff (REQUIRED before every commit)
+nox -s format
+# or directly: uv run ruff format packages/
+
+# 2. Run type checking
+nox -s typecheck
+
+# 3. Run tests
+nox -s tests
+
+# 4. Stage and commit changes
+git add <files>
+git commit -m "Your commit message"
+
+# 5. Push to remote
+git push -u origin <branch-name>
+```
+
+**Pre-Commit Checklist**:
+- ✓ Run `nox -s format` to auto-format all code
+- ✓ Run `nox -s typecheck` to verify no type errors
+- ✓ Run `nox -s tests` to ensure all tests pass
+- ✓ All three must pass before committing
+
+**Why This Matters**: GitHub Actions runs ruff linting and formatting checks. Code that hasn't been formatted will fail CI, blocking merges. Running `nox -s format` automatically fixes formatting issues before they reach CI.
 
 ## Package Installation
 

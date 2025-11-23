@@ -3,7 +3,30 @@
 ## Project Overview
 The Cheap Java project is a comprehensive data caching system organized into **8 modules** across three functional categories: core persistence layers, REST API infrastructure, and testing frameworks. It implements the CHEAP model (Catalog, Hierarchy, Entity, Aspect, Property) - a git-like system for structured data.
 
-**This Python port matches the scope of the completed TypeScript port (cheap-ts), covering all 8 modules. All porting should reference the Java implementation, as the TypeScript port is not yet mature or well-tested.**
+**Source Repository**: The Java implementation is at https://github.com/Jelloman/cheap
+
+**This Python port matches the scope of the completed TypeScript port (cheap-ts), covering all 8 modules. All porting should reference the Java implementation from the repository above, as the TypeScript port is not yet mature or well-tested.**
+
+## Current Status
+
+**Completed:**
+- ✅ Phase 1: Project Setup & Infrastructure
+- ✅ Phase 2.1: Type System & Enums (PropertyType, HierarchyType, CatalogSpecies)
+- ✅ Phase 2.2: Model Interfaces & Protocols (All core protocols defined using structural typing)
+- ✅ Phase 2.3: Basic Implementations (All ~14 implementation classes)
+- ✅ Phase 2.5: Utility Classes (CheapHasher, CheapFileUtil, CheapFactory)
+
+**In Progress:**
+- 🔄 Phase 2.4: Reflection-Based Implementations
+
+**Key Decisions Made:**
+- Using **structural typing** (Protocols without explicit inheritance) instead of nominal typing
+  - Implementation classes do NOT inherit from Protocols
+  - Type safety via duck typing - Impl classes satisfy Protocol structure
+  - Eliminates type errors from Protocol/dataclass incompatibility
+  - More Pythonic approach
+- Using **basedpyright** (strict mode) for type checking instead of standard pyright
+- Using **uv** for fast dependency management and workspace coordination
 
 ### Module Structure
 **Foundation Modules:**
@@ -22,10 +45,10 @@ The Cheap Java project is a comprehensive data caching system organized into **8
 
 ### Implementation Standards
 - **Type hints:** Use Python type hints throughout the codebase for all functions, methods, and variables
-- **Static analysis:** Use Pyright for static type checking
+- **Static analysis:** Use basedpyright (pyright fork) for static type checking in strict mode
 - **JSON serialization:** Use orjson for high-performance JSON with native UUID and datetime support
-- **Build system:** Use Hatch for monorepo management and packaging
-- **Multi-version testing:** Use Nox for testing across multiple Python versions
+- **Build system:** Use uv for dependency management and Hatch for monorepo management and packaging
+- **Multi-version testing:** Use Nox for testing across multiple Python versions (3.11, 3.12, 3.13, 3.14)
 
 ---
 
@@ -36,9 +59,9 @@ The Cheap Java project is a comprehensive data caching system organized into **8
 - **Structure:**
   ```
   cheap-py/
-  ├── pyproject.toml (monorepo root - Hatch workspace)
+  ├── pyproject.toml (monorepo root - uv workspace)
   ├── noxfile.py (multi-version testing configuration)
-  ├── pyrightconfig.json (Pyright configuration)
+  ├── pyrightconfig.json (basedpyright configuration)
   ├── .github/
   │   └── workflows/
   │       ├── build-cheap-python.yml
@@ -214,7 +237,7 @@ Set up three GitHub Actions workflows matching the Java repository structure:
 
 ## Phase 2: Core Module Port (cheap-core)
 
-### 2.1 Type System & Enums
+### 2.1 Type System & Enums ✅ COMPLETED
 **Priority:** Port fundamental enums first with full type annotations
 - `PropertyType` → Python Enum with type validation methods (fully type-hinted)
 - `HierarchyType` → Python Enum (fully type-hinted)
@@ -226,7 +249,7 @@ Set up three GitHub Actions workflows matching the Java repository structure:
 - Use `typing.Literal` for enum value types where appropriate
 - Ensure Pyright can infer all types correctly
 
-### 2.2 Model Interfaces & Protocols
+### 2.2 Model Interfaces & Protocols ✅ COMPLETED
 **Port Java interfaces to Python Protocols (PEP 544) with full type annotations:**
 - Core protocols: `Entity`, `Aspect`, `Property`, `PropertyDef`, `AspectDef`
 - Catalog protocols: `Catalog`, `CatalogDef`
@@ -245,16 +268,23 @@ Set up three GitHub Actions workflows matching the Java repository structure:
 - Java's ZonedDateTime → Use `datetime.datetime` with `zoneinfo` (Python 3.9+) or `dateutil.tz`
 - Java's URI → Use `str` with runtime validation or custom URI type
 - Java's BigInteger/BigDecimal → Use `int` (unlimited precision) and `decimal.Decimal` with type hints
-- Java interfaces → Use `typing.Protocol` for structural typing (preferred) or ABC for nominal typing
-- All protocol methods must be fully type-annotated for Pyright compatibility
+- Java interfaces → Use `typing.Protocol` for structural typing **WITHOUT explicit inheritance**
+  - **IMPORTANT:** Implementation classes do NOT inherit from Protocols
+  - Use `@runtime_checkable` decorator on Protocols for isinstance() checks
+  - Protocols define structure; Impl classes satisfy structure via duck typing
+  - This avoids type errors from Protocol @property vs dataclass field incompatibility
+- All protocol methods must be fully type-annotated for basedpyright compatibility
 
-### 2.3 Basic Implementations
-**Port ~30 basic implementation classes with complete type annotations:**
-- Entity implementations: `EntityImpl`, `EntityLazyIdImpl`, `LocalEntityOneCatalogImpl`, etc.
-- Aspect implementations: `AspectBaseImpl`, `AspectPropertyMapImpl`, `AspectObjectMapImpl`
-- Hierarchy implementations: All 5 hierarchy types
-- Builders: `AspectBuilderBase`, `PropertyDefBuilder`
-- Catalog: `CatalogImpl`, `CatalogDefImpl`
+### 2.3 Basic Implementations ✅ COMPLETED
+**Implemented 14 core classes with complete type annotations:**
+- ✅ Property implementations: `PropertyDefImpl`, `PropertyImpl`
+- ✅ Aspect implementations: `AspectDefImpl`, `AspectImpl`
+- ✅ Entity implementation: `EntityImpl`
+- ✅ Hierarchy implementations: All 5 types (`EntityListHierarchyImpl`, `EntitySetHierarchyImpl`, `EntityDirectoryHierarchyImpl`, `EntityTreeHierarchyImpl`, `AspectMapHierarchyImpl`)
+- ✅ Tree node: `EntityTreeNodeImpl`
+- ✅ Catalog implementations: `HierarchyDefImpl`, `CatalogDefImpl`, `CatalogImpl`
+- ✅ All classes use Protocol types in collections (e.g., `dict[str, PropertyDef]` not `dict[str, PropertyDefImpl]`)
+- ✅ 23 tests passing, zero type errors
 
 **Key decisions:**
 - Use `@dataclass` (preferred) for data classes with automatic __init__, __repr__, etc.
@@ -269,7 +299,7 @@ Set up three GitHub Actions workflows matching the Java repository structure:
 - Consider `frozendict` or `immutables` library for immutable collections
 - Ensure all code passes Pyright in strict mode
 
-### 2.4 Reflection-Based Implementations
+### 2.4 Reflection-Based Implementations 🔄 IN PROGRESS
 **Port reflection utilities:**
 - Java reflection → Python introspection (`inspect`, `getattr`, `setattr`, `__annotations__`)
 - `RecordAspect`, `RecordAspectDef` → Python dataclass with field introspection
@@ -281,7 +311,7 @@ Set up three GitHub Actions workflows matching the Java repository structure:
 - `dataclasses.fields()` for field introspection
 - Simpler than Java reflection API
 
-### 2.5 Utility Classes
+### 2.5 Utility Classes 🔄 IN PROGRESS
 - `CheapFactory` → Factory functions or factory classes
 - `CheapFileUtil` → `pathlib.Path` API with async support via `aiofiles`
 - `CheapHasher` → `hashlib` standard library module
@@ -724,6 +754,35 @@ cheap-db-sqlite  cheap-db-postgres  cheap-db-mariadb
   - Install types-* packages (e.g., types-requests, types-redis)
   - Check PyPI for stub packages for each dependency
   - Configure Pyright to use stub paths
+
+#### Pre-Commit Workflow (CRITICAL)
+**ALWAYS run formatting before committing** to ensure GitHub Actions checks pass:
+
+```bash
+# 1. Format code with ruff (REQUIRED before every commit)
+nox -s format
+
+# 2. Run type checking
+nox -s typecheck
+
+# 3. Run tests
+nox -s tests
+
+# 4. Stage and commit
+git add <files>
+git commit -m "Your commit message"
+
+# 5. Push
+git push -u origin <branch-name>
+```
+
+**Pre-Commit Checklist**:
+- ✓ `nox -s format` - Auto-format all code (REQUIRED)
+- ✓ `nox -s typecheck` - Verify no type errors
+- ✓ `nox -s tests` - Ensure all tests pass
+- ✓ All three must pass before pushing
+
+**Why**: GitHub Actions will reject commits with formatting/linting errors. Running `nox -s format` before committing prevents CI failures.
 
 ### Optional Enhancements
 - **Pydantic V2:** For runtime validation and serialization (very fast) - useful for REST API
