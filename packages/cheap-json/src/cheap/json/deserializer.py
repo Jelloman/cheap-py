@@ -16,7 +16,6 @@ if TYPE_CHECKING:
     from cheap.core.aspect import Aspect, AspectDef
     from cheap.core.catalog import Catalog, CatalogDef, HierarchyDef
     from cheap.core.entity import Entity
-    from cheap.core.hierarchy import Hierarchy
     from cheap.core.property import Property, PropertyDef
 
 

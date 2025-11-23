@@ -128,9 +128,9 @@ def _serialize_object(obj: Any) -> dict[str, Any]:
         TypeError: If object type is not supported.
     """
     from cheap.core.aspect import Aspect, AspectDef
-    from cheap.core.catalog import Catalog, CatalogDef
+    from cheap.core.catalog import Catalog, CatalogDef, HierarchyDef
     from cheap.core.entity import Entity
-    from cheap.core.hierarchy import Hierarchy, HierarchyDef
+    from cheap.core.hierarchy import Hierarchy
     from cheap.core.property import Property, PropertyDef
 
     if isinstance(obj, PropertyDef):
@@ -212,7 +212,7 @@ def _serialize_aspect(aspect: Aspect, include_def_name: bool = True) -> dict[str
 
     # Serialize all properties
     properties: dict[str, Any] = {}
-    for prop_name, prop_def in aspect.definition.properties.items():
+    for prop_name, _prop_def in aspect.definition.properties.items():
         prop = aspect.get_property(prop_name)
         if prop is not None and prop.value is not None:
             properties[prop_name] = prop.value
@@ -258,9 +258,7 @@ def _serialize_hierarchy(hierarchy: Hierarchy) -> dict[str, Any]:
     }
 
     # Type-specific serialization
-    if isinstance(hierarchy, EntityListHierarchy):
-        result["entities"] = [str(eid) for eid in hierarchy.all_entities]
-    elif isinstance(hierarchy, EntitySetHierarchy):
+    if isinstance(hierarchy, (EntityListHierarchy, EntitySetHierarchy)):
         result["entities"] = [str(eid) for eid in hierarchy.all_entities]
     elif isinstance(hierarchy, EntityDirectoryHierarchy):
         result["entries"] = {key: str(eid) for key, eid in hierarchy.items()}

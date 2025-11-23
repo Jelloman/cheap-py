@@ -5,13 +5,12 @@ from __future__ import annotations
 from uuid import UUID, uuid4
 
 import orjson
-import pytest
 from cheap.core.aspect_impl import AspectDefImpl, AspectImpl
 from cheap.core.catalog_impl import CatalogDefImpl, CatalogImpl, HierarchyDefImpl
 from cheap.core.catalog_species import CatalogSpecies
 from cheap.core.entity_impl import EntityImpl
 from cheap.core.hierarchy_type import HierarchyType
-from cheap.core.property_impl import PropertyDefImpl, PropertyImpl
+from cheap.core.property_impl import PropertyDefImpl
 from cheap.core.property_type import PropertyType
 from cheap.json.deserializer import CheapJsonDeserializer
 from cheap.json.serializer import CheapJsonSerializer

@@ -1,3 +1,7 @@
-"""Cheap Python - A data caching and metadata modeling system."""
+"""Cheap Python - A data caching and metadata modeling system.
 
-__version__ = "0.1.0"
+This is a namespace package that allows multiple cheap-* packages
+to share the same 'cheap' namespace.
+"""
+
+__path__ = __import__("pkgutil").extend_path(__path__, __name__)
