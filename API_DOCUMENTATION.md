@@ -13,6 +13,8 @@ Comprehensive API reference for all 8 modules in the CheapPy data caching system
 - [cheap-rest-client](#cheap-rest-client) - REST client
 - [integration-tests](#integration-tests) - Integration tests
 
+**Note**: CheapPy uses async-first architecture throughout. See **[ASYNC_GUIDE.md](ASYNC_GUIDE.md)** for comprehensive async programming patterns and best practices.
+
 ---
 
 ## cheap-core
@@ -476,22 +478,33 @@ async with AsyncCheapClient("http://localhost:8000") as client:
     print(f"API Status: {health['status']}")
 ```
 
-#### `SyncCheapClient`
+#### `CheapClient` (Synchronous)
 
-Synchronous client wrapper (for non-async code).
+Synchronous client wrapper for non-async code.
 
+**Usage:**
 ```python
-from cheap.rest.client import SyncCheapClient
+from cheap.rest.client import CheapClient
 from cheap.core import CatalogSpecies
 
-# Create client
-with SyncCheapClient("http://localhost:8000") as client:
-    # Same API as async client
+# Synchronous API (no async/await)
+with CheapClient("http://localhost:8000") as client:
+    # Create catalog
     catalog = client.create_catalog(
         species=CatalogSpecies.SOURCE,
         version="1.0.0"
     )
+    print(f"Created: {catalog.catalog_id}")
+
+    # Get catalog
+    loaded = client.get_catalog(catalog.catalog_id)
+    print(f"Loaded: {loaded.species}")
+
+    # Delete catalog
+    client.delete_catalog(catalog.catalog_id)
 ```
+
+**Note**: The synchronous client uses `httpx.Client` internally (not async), making it suitable for scripts and non-async environments. For modern async applications, use `AsyncCheapClient`.
 
 **Features:**
 - Type-safe request/response handling

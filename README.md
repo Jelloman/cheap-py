@@ -259,10 +259,12 @@ Comprehensive integration test suite covering all modules.
 
 ## 📖 Documentation
 
-- **[CLAUDE.md](CLAUDE.md)**: Comprehensive development guide with commands, patterns, and standards
+- **[README.md](README.md)**: Project overview and quick start (this file)
+- **[API_DOCUMENTATION.md](API_DOCUMENTATION.md)**: Comprehensive API reference for all 8 modules
+- **[ASYNC_GUIDE.md](ASYNC_GUIDE.md)**: Complete guide to async/await patterns and best practices
+- **[CLAUDE.md](CLAUDE.md)**: Development guide with commands, patterns, and standards
 - **[INITIAL_PLAN.md](INITIAL_PLAN.md)**: Complete porting plan and progress tracking
 - **Package READMEs**: Each package has detailed README with usage examples
-- **API Documentation**: Auto-generated from docstrings (Google style)
 
 ## 🧪 Testing
 
