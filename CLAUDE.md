@@ -6,7 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 CheapPy is a Python port of the Cheap Java project - a git-like system for structured data based on the CHEAP model (Catalog, Hierarchy, Entity, Aspect, Property). This is a comprehensive data caching system organized into 8 modules across three functional categories: core persistence layers, REST API infrastructure, and testing frameworks.
 
-**Important**: All porting work references the **Java implementation only**. The TypeScript port (cheap-ts) is not mature/well-tested and should not be used as an implementation reference.
+**Source Repository**: The Java implementation is at https://github.com/Jelloman/cheap
+
+**Important**: All porting work references the **Java implementation only** from the repository above. The TypeScript port (cheap-ts) is not mature/well-tested and should not be used as an implementation reference.
 
 ## Development Commands
 

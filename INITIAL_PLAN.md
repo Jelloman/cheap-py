@@ -3,7 +3,9 @@
 ## Project Overview
 The Cheap Java project is a comprehensive data caching system organized into **8 modules** across three functional categories: core persistence layers, REST API infrastructure, and testing frameworks. It implements the CHEAP model (Catalog, Hierarchy, Entity, Aspect, Property) - a git-like system for structured data.
 
-**This Python port matches the scope of the completed TypeScript port (cheap-ts), covering all 8 modules. All porting should reference the Java implementation, as the TypeScript port is not yet mature or well-tested.**
+**Source Repository**: The Java implementation is at https://github.com/Jelloman/cheap
+
+**This Python port matches the scope of the completed TypeScript port (cheap-ts), covering all 8 modules. All porting should reference the Java implementation from the repository above, as the TypeScript port is not yet mature or well-tested.**
 
 ## Current Status
 
@@ -12,10 +14,10 @@ The Cheap Java project is a comprehensive data caching system organized into **8
 - ✅ Phase 2.1: Type System & Enums (PropertyType, HierarchyType, CatalogSpecies)
 - ✅ Phase 2.2: Model Interfaces & Protocols (All core protocols defined using structural typing)
 - ✅ Phase 2.3: Basic Implementations (All ~14 implementation classes)
+- ✅ Phase 2.5: Utility Classes (CheapHasher, CheapFileUtil, CheapFactory)
 
 **In Progress:**
 - 🔄 Phase 2.4: Reflection-Based Implementations
-- 🔄 Phase 2.5: Utility Classes
 
 **Key Decisions Made:**
 - Using **structural typing** (Protocols without explicit inheritance) instead of nominal typing
