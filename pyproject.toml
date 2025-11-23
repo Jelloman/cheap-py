@@ -31,6 +31,7 @@ dependencies = [
     "cheap-db-mariadb",
     "cheap-rest",
     "cheap-rest-client",
+    "cheap-integration-tests",
 ]
 
 [project.optional-dependencies]
@@ -51,6 +52,7 @@ cheap-db-postgres = { workspace = true }
 cheap-db-mariadb = { workspace = true }
 cheap-rest = { workspace = true }
 cheap-rest-client = { workspace = true }
+cheap-integration-tests = { workspace = true }
 
 # UV workspace configuration
 [tool.uv.workspace]
@@ -62,6 +64,7 @@ members = [
     "packages/cheap-db-mariadb",
     "packages/cheap-rest",
     "packages/cheap-rest-client",
+    "packages/integration-tests",
 ]
 
 # Workspace configuration for monorepo
