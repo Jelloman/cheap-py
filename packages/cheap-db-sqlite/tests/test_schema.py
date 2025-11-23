@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import aiosqlite
 import pytest
 from cheap.db.sqlite.adapter import SqliteAdapter
 from cheap.db.sqlite.schema import SqliteSchema
@@ -133,7 +134,7 @@ class TestSqliteSchema:
             await SqliteSchema.create_schema(conn)
 
             # Attempt to insert property_def with non-existent aspect_def
-            with pytest.raises(Exception):  # aiosqlite.IntegrityError
+            with pytest.raises(aiosqlite.IntegrityError):
                 await conn.execute(
                     """
                     INSERT INTO property_def (aspect_def_id, name, type)
