@@ -26,6 +26,7 @@ classifiers = [
 dependencies = [
     "cheap-core",
     "cheap-json",
+    "cheap-db-sqlite",
 ]
 
 [project.optional-dependencies]
@@ -41,10 +42,11 @@ dev = [
 [tool.uv.sources]
 cheap-core = { workspace = true }
 cheap-json = { workspace = true }
+cheap-db-sqlite = { workspace = true }
 
 # UV workspace configuration
 [tool.uv.workspace]
-members = ["packages/cheap-core", "packages/cheap-json"]
+members = ["packages/cheap-core", "packages/cheap-json", "packages/cheap-db-sqlite"]
 
 # Workspace configuration for monorepo
 [tool.hatch.build.targets.wheel]
@@ -84,7 +86,7 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]  # Allow unused imports in __init__.py
-"tests/**/*.py" = ["ARG"]  # Allow unused arguments in tests
+"**/tests/**/*.py" = ["ARG"]  # Allow unused arguments in tests
 
 # Pytest configuration
 [tool.pytest.ini_options]
@@ -94,6 +96,7 @@ addopts = [
     "--strict-markers",
     "--strict-config",
     "--showlocals",
+    "--import-mode=importlib",
 ]
 testpaths = ["packages"]
 pythonpath = ["."]

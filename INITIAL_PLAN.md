@@ -299,11 +299,11 @@ Set up three GitHub Actions workflows matching the Java repository structure:
 - Consider `frozendict` or `immutables` library for immutable collections
 - Ensure all code passes Pyright in strict mode
 
-### 2.4 Reflection-Based Implementations 🔄 IN PROGRESS
+### 2.4 Reflection-Based Implementations ✅ COMPLETED
 **Port reflection utilities:**
-- Java reflection → Python introspection (`inspect`, `getattr`, `setattr`, `__annotations__`)
-- `RecordAspect`, `RecordAspectDef` → Python dataclass with field introspection
-- `ImmutablePojoAspect`, `MutablePojoAspect` → Python classes with property descriptors
+- ✅ Java reflection → Python introspection (`inspect`, `getattr`, `setattr`, `__annotations__`)
+- ✅ `RecordAspect`, `RecordAspectDef` → Python dataclass with field introspection (`DataclassAspect`, `DataclassAspectDef`)
+- ✅ Reflection utilities: `ReflectionUtil` class with type mapping and introspection methods
 
 **Python advantages:**
 - Native support for dynamic attribute access
@@ -311,17 +311,42 @@ Set up three GitHub Actions workflows matching the Java repository structure:
 - `dataclasses.fields()` for field introspection
 - Simpler than Java reflection API
 
-### 2.5 Utility Classes 🔄 IN PROGRESS
-- `CheapFactory` → Factory functions or factory classes
-- `CheapFileUtil` → `pathlib.Path` API with async support via `aiofiles`
-- `CheapHasher` → `hashlib` standard library module
-- Reflection utilities → `inspect` module and custom decorators
+**Implemented:**
+- `reflection_util.py`: ReflectionUtil class with type mapping, dataclass inspection, optional/collection detection
+- `dataclass_aspect.py`: DataclassAspectDef and DataclassAspect for wrapping Python dataclasses as CHEAP aspects
+
+### 2.5 Utility Classes ✅ COMPLETED
+- ✅ `CheapFactory` → Factory methods for creating CHEAP objects
+- ✅ `CheapFileUtil` → `pathlib.Path` API wrappers for file operations
+- ✅ `CheapHasher` → `hashlib`-based hashing utilities for CHEAP objects
+- ✅ Reflection utilities → `inspect` module and dataclass introspection
 
 ---
 
-## Phase 3: JSON Module Port (cheap-json)
+## Phase 3: JSON Module Port (cheap-json) ✅ COMPLETED
 
-### 3.1 Serialization/Deserialization with orjson
+**Implemented:**
+- ✅ Package structure: `cheap-json` with pyproject.toml, README.md
+- ✅ `serializer.py`: CheapJsonSerializer with type-specific serializers for all CHEAP objects
+- ✅ `deserializer.py`: CheapJsonDeserializer with round-trip deserialization support
+- ✅ Comprehensive test suite: 15 tests covering all serialization/deserialization scenarios
+- ✅ All tests passing with proper API usage
+
+**Key Features:**
+- High-performance serialization using orjson (2-5x faster than standard json)
+- Native UUID and datetime support
+- Compact JSON output (excludes null values and default booleans)
+- Deterministic output with sorted keys
+- Type-safe with full type hints
+- Supports pretty-printing with OPT_INDENT_2
+
+**Implementation Details:**
+- Type dispatch checks concrete implementations before protocols (due to dataclass field vs @property incompatibility)
+- Serializer uses getattr for accessing private attributes (e.g., catalog._aspect_defs)
+- Deserializer properly handles default values (is_nullable=True, is_writable=True, is_multivalued=False)
+- All serializers preserve round-trip fidelity
+
+### 3.1 Serialization/Deserialization with orjson ✅ COMPLETED
 **Use orjson for high-performance JSON serialization:**
 
 **Why orjson:**

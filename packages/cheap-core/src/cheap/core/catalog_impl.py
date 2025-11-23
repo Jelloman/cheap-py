@@ -79,6 +79,16 @@ class CatalogImpl:
     _aspect_defs: dict[str, AspectDef] = field(default_factory=dict)
     _hierarchies: dict[str, Hierarchy] = field(default_factory=dict)
 
+    @property
+    def aspect_defs(self) -> dict[str, AspectDef]:
+        """
+        Get all aspect definitions in this catalog.
+
+        Returns:
+            A mapping from aspect names to their definitions.
+        """
+        return self._aspect_defs
+
     def add_aspect_def(self, aspect_def: AspectDef) -> None:
         """
         Add an aspect definition to this catalog.
