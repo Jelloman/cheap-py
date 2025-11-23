@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
 from cheap.db.mariadb.adapter import MariaDbAdapter
 from cheap.db.mariadb.dao import MariaDbDao

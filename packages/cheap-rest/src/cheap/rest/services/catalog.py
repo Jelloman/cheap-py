@@ -10,7 +10,6 @@ from cheap.db.postgres.dao import PostgresDao
 from cheap.db.sqlite.dao import SqliteDao
 from cheap.rest.exceptions import ResourceNotFoundException
 from cheap.rest.models.catalog import (
-    CatalogListResponse,
     CatalogResponse,
     CreateCatalogRequest,
     CreateCatalogResponse,
