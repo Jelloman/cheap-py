@@ -1,0 +1,85 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cheap-rest-client"
+version = "0.1.0"
+description = "Python REST client for the Cheap REST API"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "Cheap Project Contributors"},
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Typing :: Typed",
+]
+dependencies = [
+    "cheap-core",
+    "httpx>=0.27.0",
+    "pydantic>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.0.1",
+    "pytest-cov>=7.0.0",
+    "pytest-asyncio>=1.3.0",
+    "basedpyright>=1.29.0",
+    "ruff>=0.8.4",
+    "respx>=0.21.0",  # For mocking httpx requests
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cheap"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "@abstractmethod",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "ANN", "B", "A", "COM", "C4", "DTZ", "ISC", "ICN", "G", "PIE", "PT", "RET", "SIM", "ARG", "PTH", "PD", "PGH", "PL", "TRY", "NPY", "RUF"]
+ignore = [
+    "ANN101",   # Missing type annotation for self
+    "ANN102",   # Missing type annotation for cls
+    "COM812",   # Trailing comma (conflicts with formatter)
+    "ISC001",   # Implicit string concatenation (conflicts with formatter)
+    "ANN401",   # Dynamically typed expressions (Any) - needed for httpx compatibility
+    "PLR2004",  # Magic value comparisons - HTTP status codes are standard
+    "TRY003",   # Long exception messages - descriptive errors are better
+    "TRY300",   # else block recommendation - current style is clearer
+    "PLC0415",  # Import not at top - asyncio import is conditional for async-only code
+    "N818",     # Exception naming - follows REST/HTTP convention (e.g., NotFoundException)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["ARG001"]  # Unused function arguments in test fixtures
