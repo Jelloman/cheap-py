@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11", "3.12", "3.13", "3.14"]
+        python-version: ["3.14"]
       fail-fast: false
 
     steps:
@@ -48,14 +48,12 @@ jobs:
         run: uv pip install nox
 
       - name: Run Pyright type checking
-        if: matrix.python-version == '3.12'
         run: uv tool run nox -s typecheck
 
       - name: Run tests
         run: uv tool run nox -s tests-${{ matrix.python-version }}
 
       - name: Run linting
-        if: matrix.python-version == '3.12'
         run: uv tool run nox -s lint
 
       - name: Upload test results
@@ -69,13 +67,11 @@ jobs:
             htmlcov/
 
       - name: Build packages
-        if: matrix.python-version == '3.12'
         run: |
           cd packages/cheap-core && hatch build
           # Additional packages will be built as they're implemented
 
       - name: Upload packages
-        if: matrix.python-version == '3.12'
         uses: actions/upload-artifact@v4
         with:
           name: python-packages
